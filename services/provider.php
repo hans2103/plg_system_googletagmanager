@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Extension\PluginInterface;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
@@ -36,12 +36,13 @@ return new class implements ServiceProviderInterface {
 		$container->set(
 			PluginInterface::class,
 			function (Container $container): PluginInterface {
-				$dispatcher  = $container->get(DispatcherInterface::class);
-				$config      = (array) PluginHelper::getPlugin('system', 'googletagmanager');
-				$application = $container->get(CMSApplicationInterface::class);
+				$dispatcher = $container->get(DispatcherInterface::class);
+				$config     = (array) PluginHelper::getPlugin('system', 'googletagmanager');
 
 				$plugin = new GoogleTagManager($dispatcher, $config);
-				$plugin->setApplication($application);
+
+				// Standard Joomla pattern: Factory is acceptable in service provider infrastructure
+				$plugin->setApplication(Factory::getApplication());
 
 				return $plugin;
 			}

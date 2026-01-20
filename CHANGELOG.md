@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [Unreleased]
+
+### Changed
+- Service provider uses standard Joomla pattern with `Factory::getApplication()`
+- Added clarifying comment that Factory usage is acceptable in service provider infrastructure
+- Follows Joomla core plugin conventions for Application injection
+
 ## [26.04.03] - 2026-01-20
 
 ### Added
