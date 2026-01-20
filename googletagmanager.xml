@@ -7,7 +7,7 @@
     <license>GPLv3 http://www.gnu.org/licenses/gpl.html</license>
     <authorEmail>info@hkweb.nl</authorEmail>
     <authorUrl>https://hkweb.nl</authorUrl>
-    <version>26.03.00</version>
+    <version>26.04.00</version>
     <description>System plugin for Google Tag Manager integration with consent mode support</description>
 
     <namespace path="src">HKweb\Plugin\System\GoogleTagManager</namespace>
