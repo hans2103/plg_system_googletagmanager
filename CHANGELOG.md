@@ -11,9 +11,16 @@ and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Incremen
 - **BREAKING**: Minimum Joomla version increased from 4.0 to 6.0
 - **BREAKING**: Minimum PHP version increased from 8.1 to 8.3.0
 - Plugin now targets Joomla 6.x only
+- Service provider now uses DI for Application injection instead of Factory pattern
+- Improved type safety with `HtmlDocument` type checks instead of string comparison
+- Protocol-relative URL changed to explicit HTTPS for better security
 
 ### Removed
 - Support for Joomla 4.x and 5.x
+- Factory::getApplication() usage in favor of proper DI
+
+### Fixed
+- Noscript iframe now uses `https://` instead of protocol-relative `//` URL
 
 ## [26.04.01] - 2026-01-20
 

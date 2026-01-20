@@ -15,6 +15,8 @@ namespace HKweb\Plugin\System\GoogleTagManager\Extension;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Application\CMSApplicationInterface;
+use Joomla\CMS\Document\HtmlDocument;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
 
@@ -68,15 +70,16 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	 */
 	public function onBeforeCompileHead(): void
 	{
+		$application = $this->getApplication();
+
 		// Only for frontend
-		if (!$this->getApplication()->isClient('site')) {
+		if (!$application->isClient('site')) {
 			return;
 		}
 
-		// Get the document object.
-		$document = $this->getApplication()->getDocument();
+		$document = $application->getDocument();
 
-		if ($document->getType() !== 'html') {
+		if (!$document instanceof HtmlDocument) {
 			return;
 		}
 
@@ -135,15 +138,16 @@ dataLayer.push({'event': 'gtm_consent_update'});
 	 */
 	public function onAfterRender(): void
 	{
+		$application = $this->getApplication();
+
 		// Only for frontend
-		if (!$this->getApplication()->isClient('site')) {
+		if (!$application->isClient('site')) {
 			return;
 		}
 
-		// Get the document object.
-		$document = $this->getApplication()->getDocument();
+		$document = $application->getDocument();
 
-		if ($document->getType() !== 'html') {
+		if (!$document instanceof HtmlDocument) {
 			return;
 		}
 
@@ -156,14 +160,14 @@ dataLayer.push({'event': 'gtm_consent_update'});
 		// Google Tag Manager - noscript fallback directly after body
 		$bodyScript = <<<HTML
 <!-- Google Tag Manager -->
-<noscript><iframe src="//www.googletagmanager.com/ns.html?id={$gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={$gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager -->
 
 HTML;
 
-		$buffer = $this->getApplication()->getBody();
+		$buffer = $application->getBody();
 		$buffer = preg_replace('/<body(\s[^>]*)?>/i', "<body\\1>\n{$bodyScript}", $buffer);
 
-		$this->getApplication()->setBody($buffer);
+		$application->setBody($buffer);
 	}
 }
