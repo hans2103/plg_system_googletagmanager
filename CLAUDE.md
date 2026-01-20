@@ -4,12 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a Joomla 4.x/5.x system plugin that integrates Google Tag Manager (GTM) with GDPR-compliant consent mode support. The plugin is frontend-only and injects GTM tracking code into the HTML head and body sections of Joomla sites.
+This is a Joomla 6.x system plugin that integrates Google Tag Manager (GTM) with GDPR-compliant consent mode support. The plugin is frontend-only and injects GTM tracking code into the HTML head and body sections of Joomla sites.
 
 **Key characteristics:**
 - Namespace: `HKweb\Plugin\System\GoogleTagManager`
-- Minimum Joomla: 4.0
-- Minimum PHP: 8.1
+- Minimum Joomla: 6.0
+- Minimum PHP: 8.3.0
 - Uses strict typing throughout (`declare(strict_types=1);`)
 - Implements Joomla's modern event subscriber interface
 

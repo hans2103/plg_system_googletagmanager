@@ -2,7 +2,7 @@
 <updates>
     <update>
         <name>System - Google Tag Manager</name>
-        <description>System plugin for Google Tag Manager integration with consent mode support</description>
+        <description>System plugin for Google Tag Manager integration with consent mode support (Joomla 6+)</description>
         <element>googletagmanager</element>
         <type>plugin</type>
         <folder>system</folder>
@@ -17,8 +17,7 @@
         </tags>
         <maintainer>HKweb</maintainer>
         <maintainerurl>https://hkweb.nl</maintainerurl>
-        <targetplatform name="joomla" version="4.*"/>
-        <targetplatform name="joomla" version="5.*"/>
-        <php_minimum>8.1</php_minimum>
+        <targetplatform name="joomla" version="6.*"/>
+        <php_minimum>8.3.0</php_minimum>
     </update>
 </updates>

@@ -1,6 +1,6 @@
 # Joomla System Plugin - Google Tag Manager
 
-A Joomla 4.x/5.x system plugin for Google Tag Manager integration with consent mode support for GDPR compliance.
+A Joomla 6.x system plugin for Google Tag Manager integration with consent mode support for GDPR compliance.
 
 ## Features
 
@@ -13,8 +13,8 @@ A Joomla 4.x/5.x system plugin for Google Tag Manager integration with consent m
 
 ## Requirements
 
-- Joomla 4.x or 5.x
-- PHP 8.1 or higher
+- Joomla 6.x
+- PHP 8.3 or higher
 
 ## Installation
 
