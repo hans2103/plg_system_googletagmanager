@@ -70,3 +70,19 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update update.xml
+        run: |
+          # Update version number
+          sed -i "s|<version>.*</version>|<version>${{ steps.tag.outputs.tag }}</version>|" update.xml
+
+          # Update download URL
+          sed -i "s|releases/download/[^/]*/plg_system_googletagmanager-[^<]*|releases/download/${{ steps.tag.outputs.tag }}/plg_system_googletagmanager-${{ steps.tag.outputs.tag }}|" update.xml
+
+      - name: Commit and push update.xml
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add update.xml
+          git commit -m "Update update.xml for version ${{ steps.tag.outputs.tag }}"
+          git push origin main
