@@ -13,7 +13,7 @@
     <namespace path="src">HKweb\Plugin\System\GoogleTagManager</namespace>
 
     <files>
-        <folder>services</folder>
+        <folder plugin="googletagmanager">services</folder>
         <folder>src</folder>
     </files>
 
