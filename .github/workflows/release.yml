@@ -23,6 +23,8 @@ jobs:
       - name: Create plugin package
         run: |
           mkdir -p build
+          # Only include files needed for Joomla installation
+          # Documentation files (CLAUDE.md, README.md, CHANGELOG.md, update.xml) are excluded
           zip -r build/plg_system_googletagmanager-${{ steps.tag.outputs.tag }}.zip \
             googletagmanager.xml \
             services/ \

@@ -107,11 +107,15 @@ git push origin main develop --tags
 The GitHub Actions workflow (.github/workflows/release.yml) automatically:
 1. Creates a GitHub release
 2. Builds ZIP package: `plg_system_googletagmanager-{version}.zip`
-3. Includes only: `googletagmanager.xml`, `services/`, `src/`
-4. Generates changelog from git commits
-5. Attaches package to release
-6. Updates `update.xml` with new version and download URL
-7. Commits and pushes `update.xml` to main branch
+3. Includes only files needed for installation:
+   - `googletagmanager.xml` (plugin manifest)
+   - `services/` (DI container configuration)
+   - `src/` (plugin source code)
+4. Excludes documentation files: `CLAUDE.md`, `README.md`, `CHANGELOG.md`, `update.xml`, `.github/`
+5. Generates changelog from git commits
+6. Attaches package to release
+7. Updates `update.xml` with new version and download URL
+8. Commits and pushes `update.xml` to main branch
 
 ## Code Style Guidelines
 
