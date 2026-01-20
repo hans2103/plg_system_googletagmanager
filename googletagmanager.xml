@@ -30,4 +30,8 @@
             </fieldset>
         </fields>
     </config>
+
+    <updateservers>
+        <server type="extension" name="Google Tag Manager Update Server">https://raw.githubusercontent.com/hans2103/plg_system_googletagmanager/main/update.xml</server>
+    </updateservers>
 </extension>
