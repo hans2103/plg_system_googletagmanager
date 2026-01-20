@@ -21,6 +21,7 @@ This is a Joomla 6.x system plugin that integrates Google Tag Manager (GTM) with
 - Service provider for Joomla's DI container
 - Registers the plugin with the dependency injection system
 - Handles plugin instantiation with proper dispatcher and configuration
+- Uses `Factory::getApplication()` following standard Joomla plugin pattern (Factory is acceptable in service provider infrastructure)
 
 **src/Extension/GoogleTagManager.php**
 - Main plugin class implementing `SubscriberInterface`
