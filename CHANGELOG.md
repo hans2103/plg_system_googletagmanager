@@ -5,12 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
-## [Unreleased]
+## [26.04.04] - 2026-01-20
 
 ### Changed
 - Service provider uses standard Joomla pattern with `Factory::getApplication()`
 - Added clarifying comment that Factory usage is acceptable in service provider infrastructure
 - Follows Joomla core plugin conventions for Application injection
+
+### Removed
+- Unused `CMSApplicationInterface` import from plugin class
 
 ## [26.04.03] - 2026-01-20
 
@@ -79,6 +82,7 @@ and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Incremen
 - Uses Joomla's event subscriber interface
 - Implements onBeforeCompileHead and onAfterRender events
 
+[26.04.04]: https://github.com/hans2103/plg_system_googletagmanager/releases/tag/26.04.04
 [26.04.03]: https://github.com/hans2103/plg_system_googletagmanager/releases/tag/26.04.03
 [26.04.02]: https://github.com/hans2103/plg_system_googletagmanager/releases/tag/26.04.02
 [26.04.01]: https://github.com/hans2103/plg_system_googletagmanager/releases/tag/26.04.01
