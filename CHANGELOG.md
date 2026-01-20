@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [Unreleased]
+
+### Added
+- GTM Container ID caching to improve performance and avoid repeated parameter lookups
+
+### Changed
+- Improved code formatting with cleaner heredoc syntax for inline JavaScript
+- Enhanced regex pattern for body tag injection (uses `$0` and limit of 1)
+- Added explicit type casting for preg_replace result
+- Application object now cached in methods to reduce method calls
+- Removed unnecessary HTML comments from inline scripts for cleaner output
+
+### Fixed
+- GitHub Actions workflow now correctly checks out main branch before committing update.xml
+
 ## [26.04.02] - 2026-01-20
 
 ### Changed
