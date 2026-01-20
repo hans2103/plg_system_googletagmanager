@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.04.03] - 2026-01-20
+
+### Added
+- GTM Container ID caching to improve performance and avoid repeated parameter lookups
+
+### Changed
+- Improved code formatting with cleaner heredoc syntax for inline JavaScript
+- Enhanced regex pattern for body tag injection (uses `$0` and limit of 1)
+- Added explicit type casting for preg_replace result
+- Application object now cached in methods to reduce method calls
+- Removed unnecessary HTML comments from inline scripts for cleaner output
+
+### Fixed
+- GitHub Actions workflow now correctly checks out main branch before committing update.xml
+
 ## [26.04.02] - 2026-01-20
 
 ### Changed
@@ -57,6 +72,7 @@ and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Incremen
 - Uses Joomla's event subscriber interface
 - Implements onBeforeCompileHead and onAfterRender events
 
+[26.04.03]: https://github.com/hans2103/plg_system_googletagmanager/releases/tag/26.04.03
 [26.04.02]: https://github.com/hans2103/plg_system_googletagmanager/releases/tag/26.04.02
 [26.04.01]: https://github.com/hans2103/plg_system_googletagmanager/releases/tag/26.04.01
 [26.04.00]: https://github.com/hans2103/plg_system_googletagmanager/releases/tag/26.04.00

@@ -31,6 +31,14 @@ use Joomla\Event\SubscriberInterface;
 final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 {
 	/**
+	 * Cached GTM Container ID
+	 *
+	 * @var    string|null
+	 * @since  26.04.00
+	 */
+	private ?string $gtmId = null;
+
+	/**
 	 * Returns an array of events this subscriber will listen to.
 	 *
 	 * @return  array
@@ -48,15 +56,19 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	/**
 	 * Get the GTM Container ID
 	 *
-	 * @return  string|null
+	 * @return  string|null  The GTM Container ID or null if not configured
 	 *
 	 * @since   26.03.00
 	 */
 	private function getGTMId(): ?string
 	{
-		$id = $this->params->get('container_id', '');
+		if ($this->gtmId === null)
+		{
+			$id = $this->params->get('container_id', '');
+			$this->gtmId = $id !== '' ? $id : null;
+		}
 
-		return $id !== '' ? $id : null;
+		return $this->gtmId;
 	}
 
 	/**
@@ -73,58 +85,59 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 		$application = $this->getApplication();
 
 		// Only for frontend
-		if (!$application->isClient('site')) {
+		if (!$application->isClient('site'))
+		{
 			return;
 		}
 
 		$document = $application->getDocument();
 
-		if (!$document instanceof HtmlDocument) {
+		// Type check for HTML document
+		if (!$document instanceof HtmlDocument)
+		{
 			return;
 		}
 
 		$gtmId = $this->getGTMId();
 
-		if ($gtmId === null) {
+		if ($gtmId === null)
+		{
 			return;
 		}
 
-		// Load init state as early as possible
-		$consentScript = "
+		// Initialize consent mode and data layer
+		$consentScript = <<<JS
 window.dataLayer = window.dataLayer || [];
 
 function gtag() {
-    dataLayer.push(arguments);
+	dataLayer.push(arguments);
 }
 
 if (localStorage.getItem('consentMode') === null) {
-    gtag('consent', 'default', {
-        'ad_storage': 'denied',
-        'ad_user_data': 'denied',
-        'ad_personalization': 'denied',
-        'analytics_storage': 'granted',
-        'personalization_storage': 'granted',
-        'functionality_storage': 'granted',
-        'security_storage': 'granted',
-    });
+	gtag('consent', 'default', {
+		'ad_storage': 'denied',
+		'ad_user_data': 'denied',
+		'ad_personalization': 'denied',
+		'analytics_storage': 'granted',
+		'personalization_storage': 'granted',
+		'functionality_storage': 'granted',
+		'security_storage': 'granted',
+	});
 } else {
-    gtag('consent', 'default', JSON.parse(localStorage.getItem('consentMode')));
+	gtag('consent', 'default', JSON.parse(localStorage.getItem('consentMode')));
 }
 
 dataLayer.push({'event': 'gtm_consent_update'});
-		";
+JS;
 
-		$document->getWebAssetManager()
-			->addInlineScript($consentScript);
+		$document->getWebAssetManager()->addInlineScript($consentScript);
 
-		// Google Tag Manager - partly loaded in head
-		$headScript = "
-		<!-- Google Tag Manager -->
-			(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','" . $gtmId . "');
-		<!-- End Google Tag Manager -->
-	";
-		$document->getWebAssetManager()
-			->addInlineScript($headScript);
+		// Google Tag Manager main script
+		$headScript = <<<JS
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{$gtmId}');
+JS;
+
+		$document->getWebAssetManager()->addInlineScript($headScript);
 	}
 
 	/**
@@ -141,32 +154,34 @@ dataLayer.push({'event': 'gtm_consent_update'});
 		$application = $this->getApplication();
 
 		// Only for frontend
-		if (!$application->isClient('site')) {
+		if (!$application->isClient('site'))
+		{
 			return;
 		}
 
 		$document = $application->getDocument();
 
-		if (!$document instanceof HtmlDocument) {
+		// Type check for HTML document
+		if (!$document instanceof HtmlDocument)
+		{
 			return;
 		}
 
 		$gtmId = $this->getGTMId();
 
-		if ($gtmId === null) {
+		if ($gtmId === null)
+		{
 			return;
 		}
 
-		// Google Tag Manager - noscript fallback directly after body
+		// Google Tag Manager noscript fallback
 		$bodyScript = <<<HTML
-<!-- Google Tag Manager -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={$gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager -->
 
 HTML;
 
 		$buffer = $application->getBody();
-		$buffer = preg_replace('/<body(\s[^>]*)?>/i', "<body\\1>\n{$bodyScript}", $buffer);
+		$buffer = (string) preg_replace('/<body(\s[^>]*)?>/i', "$0\n{$bodyScript}", $buffer, 1);
 
 		$application->setBody($buffer);
 	}
