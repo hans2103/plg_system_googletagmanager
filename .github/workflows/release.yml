@@ -73,6 +73,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Checkout main branch
+        run: |
+          git fetch origin main
+          git checkout main
+
       - name: Update update.xml
         run: |
           # Update version number
