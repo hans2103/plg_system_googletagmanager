@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [Unreleased]
+
+### Changed
+- **BREAKING**: Minimum Joomla version increased from 4.0 to 6.0
+- **BREAKING**: Minimum PHP version increased from 8.1 to 8.3.0
+- Plugin now targets Joomla 6.x only
+
+### Removed
+- Support for Joomla 4.x and 5.x
+
 ## [26.04.01] - 2026-01-20
 
 ### Fixed
