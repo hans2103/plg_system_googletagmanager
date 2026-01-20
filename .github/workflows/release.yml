@@ -1,0 +1,72 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get tag name
+        id: tag
+        run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Create plugin package
+        run: |
+          mkdir -p build
+          zip -r build/plg_system_googletagmanager-${{ steps.tag.outputs.tag }}.zip \
+            googletagmanager.xml \
+            services/ \
+            src/ \
+            -x "*.git*" "*.DS_Store"
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          echo "## Changes in ${{ steps.tag.outputs.tag }}" > CHANGELOG.md
+          echo "" >> CHANGELOG.md
+
+          # Get the previous tag
+          PREVIOUS_TAG=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1) 2>/dev/null || echo "")
+
+          if [ -n "$PREVIOUS_TAG" ]; then
+            echo "### Commits since $PREVIOUS_TAG" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            git log $PREVIOUS_TAG..${{ steps.tag.outputs.tag }} --pretty=format:"- %s (%h)" >> CHANGELOG.md
+          else
+            echo "### Initial Release" >> CHANGELOG.md
+            echo "" >> CHANGELOG.md
+            git log --pretty=format:"- %s (%h)" >> CHANGELOG.md
+          fi
+
+          echo "" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "## Installation" >> CHANGELOG.md
+          echo "" >> CHANGELOG.md
+          echo "1. Download the \`plg_system_googletagmanager-${{ steps.tag.outputs.tag }}.zip\` file below" >> CHANGELOG.md
+          echo "2. In Joomla administrator, go to Extensions → Manage → Install" >> CHANGELOG.md
+          echo "3. Upload and install the package" >> CHANGELOG.md
+          echo "4. Enable the plugin in System → Plugins" >> CHANGELOG.md
+          echo "5. Configure your GTM Container ID" >> CHANGELOG.md
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: Release ${{ steps.tag.outputs.tag }}
+          body_path: CHANGELOG.md
+          files: |
+            build/plg_system_googletagmanager-${{ steps.tag.outputs.tag }}.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

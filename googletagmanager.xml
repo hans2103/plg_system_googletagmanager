@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="system" method="upgrade">
+    <name>System - Google Tag Manager</name>
+    <author>HKweb</author>
+    <creationDate>26-10-2025</creationDate>
+    <copyright>Copyright 2025 HKweb</copyright>
+    <license>GPLv3 http://www.gnu.org/licenses/gpl.html</license>
+    <authorEmail>info@hkweb.nl</authorEmail>
+    <authorUrl>https://hkweb.nl</authorUrl>
+    <version>26.03.00</version>
+    <description>System plugin for Google Tag Manager integration with consent mode support</description>
+
+    <namespace path="src">HKweb\Plugin\System\GoogleTagManager</namespace>
+
+    <files>
+        <folder>services</folder>
+        <folder>src</folder>
+    </files>
+
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                    name="container_id"
+                    type="text"
+                    label="Container ID"
+                    default=""
+                    description="Enter your GTM Container Public ID (GTM-XXXX)"
+                />
+            </fieldset>
+        </fields>
+    </config>
+</extension>
