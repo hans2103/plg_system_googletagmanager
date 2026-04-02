@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.14.02] - 2026-04-02
+
+### Added
+- Server-side tagging support with configurable custom sGTM domain
+- Typed class constant `GTM_DEFAULT_BASE_URL` (PHP 8.3) replacing duplicated URL string
+
+### Changed
+- `#[\Override]` attribute added to `getSubscribedEvents()` for explicit interface implementation
+
+### Fixed
+- `getServerSideDomain()` caching now correctly avoids repeated param lookups when server-side tagging is disabled
+
 ## [26.04.04] - 2026-01-20
 
 ### Changed
@@ -82,6 +94,7 @@ and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Incremen
 - Uses Joomla's event subscriber interface
 - Implements onBeforeCompileHead and onAfterRender events
 
+[26.14.02]: https://github.com/hans2103/plg_system_googletagmanager/releases/tag/26.14.02
 [26.04.04]: https://github.com/hans2103/plg_system_googletagmanager/releases/tag/26.04.04
 [26.04.03]: https://github.com/hans2103/plg_system_googletagmanager/releases/tag/26.04.03
 [26.04.02]: https://github.com/hans2103/plg_system_googletagmanager/releases/tag/26.04.02
