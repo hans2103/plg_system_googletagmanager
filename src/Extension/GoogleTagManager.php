@@ -30,6 +30,13 @@ use Joomla\Event\SubscriberInterface;
 final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 {
 	/**
+	 * Default GTM base URL
+	 *
+	 * @since  26.14.02
+	 */
+	private const string GTM_DEFAULT_BASE_URL = 'https://www.googletagmanager.com';
+
+	/**
 	 * Cached GTM Container ID
 	 *
 	 * @var    string|null
@@ -38,12 +45,29 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	private ?string $gtmId = null;
 
 	/**
+	 * Cached server-side GTM domain
+	 *
+	 * @var    string|null
+	 * @since  26.14.01
+	 */
+	private ?string $serverSideDomain = null;
+
+	/**
+	 * Whether the server-side domain has been resolved
+	 *
+	 * @var    bool
+	 * @since  26.14.02
+	 */
+	private bool $serverSideDomainResolved = false;
+
+	/**
 	 * Returns an array of events this subscriber will listen to.
 	 *
 	 * @return  array
 	 *
 	 * @since   26.03.00
 	 */
+	#[\Override]
 	public static function getSubscribedEvents(): array
 	{
 		return [
@@ -68,6 +92,32 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 		}
 
 		return $this->gtmId;
+	}
+
+	/**
+	 * Get the server-side GTM base URL
+	 *
+	 * Returns the custom sGTM domain (e.g. https://sst.example.com) when configured,
+	 * or null to fall back to the standard Google CDN.
+	 *
+	 * @return  string|null  The server-side domain or null if not configured
+	 *
+	 * @since   26.14.01
+	 */
+	private function getServerSideDomain(): ?string
+	{
+		if (!$this->serverSideDomainResolved)
+		{
+			$this->serverSideDomainResolved = true;
+
+			if ((bool) $this->params->get('server_side_tagging', 0))
+			{
+				$domain = rtrim((string) $this->params->get('server_side_domain', ''), '/');
+				$this->serverSideDomain = $domain !== '' ? $domain : null;
+			}
+		}
+
+		return $this->serverSideDomain;
 	}
 
 	/**
@@ -117,8 +167,8 @@ if (localStorage.getItem('consentMode') === null) {
 		'ad_storage': 'denied',
 		'ad_user_data': 'denied',
 		'ad_personalization': 'denied',
-		'analytics_storage': 'granted',
-		'personalization_storage': 'granted',
+		'analytics_storage': 'denied',
+		'personalization_storage': 'denied',
 		'functionality_storage': 'granted',
 		'security_storage': 'granted',
 	});
@@ -132,8 +182,9 @@ JS;
 		$document->getWebAssetManager()->addInlineScript($consentScript);
 
 		// Google Tag Manager main script
+		$gtmBaseUrl = $this->getServerSideDomain() ?? self::GTM_DEFAULT_BASE_URL;
 		$headScript = <<<JS
-(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{$gtmId}');
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='{$gtmBaseUrl}/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{$gtmId}');
 JS;
 
 		$document->getWebAssetManager()->addInlineScript($headScript);
@@ -174,8 +225,9 @@ JS;
 		}
 
 		// Google Tag Manager noscript fallback
+		$gtmBaseUrl  = $this->getServerSideDomain() ?? self::GTM_DEFAULT_BASE_URL;
 		$bodyScript = <<<HTML
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id={$gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<noscript><iframe src="{$gtmBaseUrl}/ns.html?id={$gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 HTML;
 
