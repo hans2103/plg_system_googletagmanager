@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.14.10] - 2026-04-03
+
+### Fixed
+- `getScriptLoaderUrl()` now appends `server_side_path` to the custom script loader URL, matching the behaviour of `getGtmBaseUrl()` for the default sGTM domain
+
 ## [26.14.09] - 2026-04-03
 
 ### Fixed
