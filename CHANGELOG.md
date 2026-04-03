@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.14.05] - 2026-04-03
+
+### Fixed
+- Release workflow now extracts the curated changelog section from CHANGELOG.md instead of overwriting it with auto-generated git log output
+
 ## [26.14.04] - 2026-04-03
 
 ### Added
