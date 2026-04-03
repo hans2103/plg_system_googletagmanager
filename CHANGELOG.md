@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.14.08] - 2026-04-03
+
+### Added
+- `container_identifier` config field: enter the identifier from your sGTM provider (e.g. Stape) and the plugin auto-generates the obfuscated filename and query string
+- `generateLoaderFromIdentifier()`: replicates Stape's Custom Loader obfuscation algorithm using a seeded `Random\Engine\Mt19937` RNG — values are stable across requests for a given identifier + GTM ID pair without needing a cache
+- `LOADER_CHARS` class constant for the alphanumeric character set used in obfuscation
+
+### Changed
+- `getCustomLoader()` now checks manual fields first (explicit override), then falls back to identifier-based auto-generation
+- Custom loader note and manual override note updated to explain both configuration paths
+
 ## [26.14.07] - 2026-04-03
 
 ### Added

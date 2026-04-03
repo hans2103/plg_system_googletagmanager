@@ -109,6 +109,13 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	private bool $customLoaderResolved = false;
 
 	/**
+	 * Character set used when generating obfuscated loader strings
+	 *
+	 * @since  26.14.08
+	 */
+	private const string LOADER_CHARS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+	/**
 	 * Returns an array of events this subscriber will listen to.
 	 *
 	 * @return  array
@@ -256,9 +263,12 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	/**
 	 * Get custom loader configuration for enhanced ad blocker protection
 	 *
-	 * Returns the obfuscated script filename and query string when both are configured
-	 * (e.g. from Stape's Custom Loader power-up with enhanced ad blocker protection),
-	 * or null to fall back to the standard gtm.js loader.
+	 * Priority order:
+	 * 1. Manual fields (custom_script_filename + custom_script_params) — explicit override
+	 * 2. Container identifier — auto-generates filename and params using the same
+	 *    algorithm as Stape's Custom Loader power-up (seeded deterministic RNG so
+	 *    values are stable across requests without needing a cache)
+	 * 3. null — fall back to the standard gtm.js loader
 	 *
 	 * @return  array{filename: string, params: string}|null
 	 *
@@ -272,6 +282,7 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 
 			if ((bool) $this->params->get('server_side_tagging', 0))
 			{
+				// Priority 1: manual filename + params (explicit override)
 				$filename = trim((string) $this->params->get('custom_script_filename', ''));
 				$params   = trim((string) $this->params->get('custom_script_params', ''));
 
@@ -279,10 +290,86 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 				{
 					$this->customLoader = ['filename' => $filename, 'params' => $params];
 				}
+				else
+				{
+					// Priority 2: auto-generate from container identifier
+					$identifier = trim((string) $this->params->get('container_identifier', ''));
+					$gtmId      = $this->getGTMId();
+
+					if ($identifier !== '' && $gtmId !== null)
+					{
+						$this->customLoader = $this->generateLoaderFromIdentifier($identifier, $gtmId);
+					}
+				}
 			}
 		}
 
 		return $this->customLoader;
+	}
+
+	/**
+	 * Generate an obfuscated custom loader from a container identifier and GTM container ID
+	 *
+	 * Replicates the algorithm used by Stape's Custom Loader power-up:
+	 * - Filename: random 1–5 char prefix (not ending in 'kp'/'gt') + identifier + '.js'
+	 * - Params:   random 1–8 char name + '=' + urlencode(base64('id=GTM-ID')) + '&' + random suffix
+	 *
+	 * Values are stable for a given identifier + GTM ID combination because the RNG is seeded
+	 * deterministically — no caching or database storage required.
+	 *
+	 * @param   string  $identifier  The container identifier from the sGTM provider
+	 * @param   string  $gtmId       The GTM container ID (e.g. GTM-XXXXXXX)
+	 *
+	 * @return  array{filename: string, params: string}
+	 *
+	 * @since   26.14.08
+	 */
+	private function generateLoaderFromIdentifier(string $identifier, string $gtmId): array
+	{
+		$chars = self::LOADER_CHARS;
+		$len   = strlen($chars);
+
+		// Seed the RNG deterministically so the same inputs always produce the same output
+		$rng = new \Random\Randomizer(new \Random\Engine\Mt19937(abs(crc32($identifier . $gtmId))));
+
+		// --- Filename prefix: 1–5 chars, must not end in 'kp' or 'gt' ---
+		$prefix = '';
+
+		for ($i = 0, $prefixLen = $rng->getInt(1, 5); $i < $prefixLen; $i++)
+		{
+			$prefix .= $chars[$rng->getInt(0, $len - 1)];
+		}
+
+		while (preg_match('/(kp|gt)$/i', $prefix))
+		{
+			$prefix .= $chars[$rng->getInt(0, $len - 1)];
+		}
+
+		$filename = $prefix . $identifier . '.js';
+
+		// --- Obfuscated params ---
+		$paramName = '';
+
+		for ($i = 0, $paramLen = $rng->getInt(1, 8); $i < $paramLen; $i++)
+		{
+			$paramName .= $chars[$rng->getInt(0, $len - 1)];
+		}
+
+		$encodedId = urlencode(base64_encode('id=' . $gtmId));
+
+		$suffixes = [
+			'cgm=nmB',
+			'asq=2',
+			'tl=dr',
+			'type=' . substr(md5($identifier), 0, 8),
+			'sort=asc',
+			'sort=desc',
+		];
+
+		$suffix = $suffixes[$rng->getInt(0, count($suffixes) - 1)];
+		$params = $paramName . '=' . $encodedId . '&' . $suffix;
+
+		return ['filename' => $filename, 'params' => $params];
 	}
 
 	/**
