@@ -77,6 +77,22 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	private bool $serverSidePathResolved = false;
 
 	/**
+	 * Cached script loader URL (overrides the sGTM domain for the head script only)
+	 *
+	 * @var    string|null
+	 * @since  26.14.06
+	 */
+	private ?string $scriptLoaderUrl = null;
+
+	/**
+	 * Whether the script loader URL has been resolved
+	 *
+	 * @var    bool
+	 * @since  26.14.06
+	 */
+	private bool $scriptLoaderUrlResolved = false;
+
+	/**
 	 * Returns an array of events this subscriber will listen to.
 	 *
 	 * @return  array
@@ -186,6 +202,42 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	}
 
 	/**
+	 * Get the base URL used to load the GTM head script
+	 *
+	 * When a dedicated script loader URL is configured (e.g. via Stape's Custom Loader
+	 * power-up, where gtm.js is proxied through the site's own domain), that URL is
+	 * returned. Otherwise falls back to the sGTM base URL or the Google CDN default.
+	 *
+	 * @return  string  The base URL from which gtm.js is served
+	 *
+	 * @since   26.14.06
+	 */
+	private function getScriptLoaderUrl(): string
+	{
+		if (!$this->scriptLoaderUrlResolved)
+		{
+			$this->scriptLoaderUrlResolved = true;
+
+			if ((bool) $this->params->get('server_side_tagging', 0))
+			{
+				$url = rtrim((string) $this->params->get('script_loader_url', ''), '/');
+
+				if ($url !== '')
+				{
+					if (!str_starts_with($url, 'https://'))
+					{
+						$url = 'https://' . ltrim($url, '/');
+					}
+
+					$this->scriptLoaderUrl = $url;
+				}
+			}
+		}
+
+		return $this->scriptLoaderUrl ?? $this->getGtmBaseUrl();
+	}
+
+	/**
 	 * Get additional GTM environment query parameters for gtm_auth / gtm_preview
 	 *
 	 * Returns an array with 'gtm_auth', 'gtm_preview', and 'gtm_cookies_win' keys
@@ -274,7 +326,7 @@ JS;
 		$document->getWebAssetManager()->addInlineScript($consentScript);
 
 		// Escape values for use inside a JS single-quoted string literal
-		$gtmBaseUrl       = $this->getGtmBaseUrl();
+		$gtmBaseUrl       = $this->getScriptLoaderUrl();
 		$jsEscapedBaseUrl = addcslashes($gtmBaseUrl, "\\'");
 		$jsEscapedGtmId   = addcslashes($gtmId, "\\'");
 
