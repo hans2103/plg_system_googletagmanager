@@ -61,6 +61,22 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	private bool $serverSideDomainResolved = false;
 
 	/**
+	 * Cached server-side GTM path prefix (e.g. '/custom-path')
+	 *
+	 * @var    string
+	 * @since  26.14.03
+	 */
+	private string $serverSidePath = '';
+
+	/**
+	 * Whether the server-side path has been resolved
+	 *
+	 * @var    bool
+	 * @since  26.14.03
+	 */
+	private bool $serverSidePathResolved = false;
+
+	/**
 	 * Returns an array of events this subscriber will listen to.
 	 *
 	 * @return  array
@@ -95,7 +111,7 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	}
 
 	/**
-	 * Get the server-side GTM base URL
+	 * Get the server-side GTM domain, enforcing https://
 	 *
 	 * Returns the custom sGTM domain (e.g. https://sst.example.com) when configured,
 	 * or null to fall back to the standard Google CDN.
@@ -113,11 +129,87 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 			if ((bool) $this->params->get('server_side_tagging', 0))
 			{
 				$domain = rtrim((string) $this->params->get('server_side_domain', ''), '/');
-				$this->serverSideDomain = $domain !== '' ? $domain : null;
+
+				if ($domain !== '')
+				{
+					// Enforce https://
+					if (!str_starts_with($domain, 'https://'))
+					{
+						$domain = 'https://' . ltrim($domain, '/');
+					}
+
+					$this->serverSideDomain = $domain;
+				}
 			}
 		}
 
 		return $this->serverSideDomain;
+	}
+
+	/**
+	 * Get the server-side GTM path prefix
+	 *
+	 * Returns a slash-prefixed path (e.g. '/custom') when configured, or an empty
+	 * string when scripts are served from the root of the sGTM domain.
+	 * Only applies when server-side tagging is enabled.
+	 *
+	 * @return  string  The path prefix or empty string
+	 *
+	 * @since   26.14.03
+	 */
+	private function getServerSidePath(): string
+	{
+		if (!$this->serverSidePathResolved)
+		{
+			$this->serverSidePathResolved = true;
+
+			if ((bool) $this->params->get('server_side_tagging', 0))
+			{
+				$path = trim((string) $this->params->get('server_side_path', ''), '/');
+				$this->serverSidePath = $path !== '' ? '/' . $path : '';
+			}
+		}
+
+		return $this->serverSidePath;
+	}
+
+	/**
+	 * Get the effective GTM base URL (domain + optional path prefix)
+	 *
+	 * @return  string  The GTM base URL to load scripts from
+	 *
+	 * @since   26.14.03
+	 */
+	private function getGtmBaseUrl(): string
+	{
+		return ($this->getServerSideDomain() ?? self::GTM_DEFAULT_BASE_URL) . $this->getServerSidePath();
+	}
+
+	/**
+	 * Get additional GTM environment query parameters for gtm_auth / gtm_preview
+	 *
+	 * Returns an array with 'gtm_auth', 'gtm_preview', and 'gtm_cookies_win' keys
+	 * when both tokens are configured, or an empty array otherwise.
+	 *
+	 * @return  array<string, string>
+	 *
+	 * @since   26.14.03
+	 */
+	private function getGtmEnvironmentParams(): array
+	{
+		$auth    = trim((string) $this->params->get('gtm_auth', ''));
+		$preview = trim((string) $this->params->get('gtm_preview', ''));
+
+		if ($auth !== '' && $preview !== '')
+		{
+			return [
+				'gtm_auth'        => $auth,
+				'gtm_preview'     => $preview,
+				'gtm_cookies_win' => 'x',
+			];
+		}
+
+		return [];
 	}
 
 	/**
@@ -181,10 +273,18 @@ JS;
 
 		$document->getWebAssetManager()->addInlineScript($consentScript);
 
+		// Escape values for use inside a JS single-quoted string literal
+		$gtmBaseUrl       = $this->getGtmBaseUrl();
+		$jsEscapedBaseUrl = addcslashes($gtmBaseUrl, "\\'");
+		$jsEscapedGtmId   = addcslashes($gtmId, "\\'");
+
+		// Build optional environment query string (values are rawurlencode'd, safe in JS strings)
+		$envParams      = $this->getGtmEnvironmentParams();
+		$jsEnvParamsStr = $envParams !== [] ? '&' . http_build_query($envParams) : '';
+
 		// Google Tag Manager main script
-		$gtmBaseUrl = $this->getServerSideDomain() ?? self::GTM_DEFAULT_BASE_URL;
 		$headScript = <<<JS
-(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='{$gtmBaseUrl}/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{$gtmId}');
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='{$jsEscapedBaseUrl}/gtm.js?id='+i+dl+'{$jsEnvParamsStr}';f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{$jsEscapedGtmId}');
 JS;
 
 		$document->getWebAssetManager()->addInlineScript($headScript);
@@ -224,10 +324,14 @@ JS;
 			return;
 		}
 
+		// Build noscript iframe src with all query parameters, then HTML-escape the full URL
+		$queryParams = array_merge(['id' => $gtmId], $this->getGtmEnvironmentParams());
+		$noscriptSrc = $this->getGtmBaseUrl() . '/ns.html?' . http_build_query($queryParams);
+		$htmlSrc     = htmlspecialchars($noscriptSrc, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
 		// Google Tag Manager noscript fallback
-		$gtmBaseUrl  = $this->getServerSideDomain() ?? self::GTM_DEFAULT_BASE_URL;
 		$bodyScript = <<<HTML
-<noscript><iframe src="{$gtmBaseUrl}/ns.html?id={$gtmId}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<noscript><iframe src="{$htmlSrc}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 HTML;
 

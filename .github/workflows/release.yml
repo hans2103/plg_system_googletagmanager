@@ -29,6 +29,7 @@ jobs:
             googletagmanager.xml \
             services/ \
             src/ \
+            language/ \
             -x "*.git*" "*.DS_Store"
 
       - name: Generate changelog
@@ -61,7 +62,7 @@ jobs:
           echo "5. Configure your GTM Container ID" >> CHANGELOG.md
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: Release ${{ steps.tag.outputs.tag }}
@@ -80,16 +81,16 @@ jobs:
 
       - name: Update update.xml
         run: |
-          # Update version number
-          sed -i "s|<version>.*</version>|<version>${{ steps.tag.outputs.tag }}</version>|" update.xml
+          # Update version number (first occurrence only, so old entries are not overwritten)
+          sed -i "0,/<version>/s|<version>.*</version>|<version>${{ steps.tag.outputs.tag }}</version>|" update.xml
 
-          # Update download URL
-          sed -i "s|releases/download/[^/]*/plg_system_googletagmanager-[^<]*|releases/download/${{ steps.tag.outputs.tag }}/plg_system_googletagmanager-${{ steps.tag.outputs.tag }}|" update.xml
+          # Update download URL (first occurrence only, preserve .zip extension)
+          sed -i "0,/downloadurl/s|releases/download/[^/]*/plg_system_googletagmanager-[^<]*|releases/download/${{ steps.tag.outputs.tag }}/plg_system_googletagmanager-${{ steps.tag.outputs.tag }}.zip|" update.xml
 
       - name: Commit and push update.xml
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add update.xml
-          git commit -m "Update update.xml for version ${{ steps.tag.outputs.tag }}"
-          git push origin main
+          git commit -m "Update update.xml for version ${{ steps.tag.outputs.tag }}" || echo "No changes to commit"
+          git push origin main || echo "No changes to push"
