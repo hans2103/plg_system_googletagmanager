@@ -32,41 +32,28 @@ jobs:
             language/ \
             -x "*.git*" "*.DS_Store"
 
-      - name: Generate changelog
+      - name: Generate release notes
         id: changelog
         run: |
-          echo "## Changes in ${{ steps.tag.outputs.tag }}" > CHANGELOG.md
-          echo "" >> CHANGELOG.md
+          # Extract the section for this tag from CHANGELOG.md, write to a separate file
+          # so CHANGELOG.md itself remains intact for later steps
+          awk "/^## \[${{ steps.tag.outputs.tag }}\]/{found=1; next} /^## \[/{if(found) exit} found{print}" CHANGELOG.md > release_notes.md
 
-          # Get the previous tag
-          PREVIOUS_TAG=$(git describe --abbrev=0 --tags $(git rev-list --tags --skip=1 --max-count=1) 2>/dev/null || echo "")
-
-          if [ -n "$PREVIOUS_TAG" ]; then
-            echo "### Commits since $PREVIOUS_TAG" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-            git log $PREVIOUS_TAG..${{ steps.tag.outputs.tag }} --pretty=format:"- %s (%h)" >> CHANGELOG.md
-          else
-            echo "### Initial Release" >> CHANGELOG.md
-            echo "" >> CHANGELOG.md
-            git log --pretty=format:"- %s (%h)" >> CHANGELOG.md
-          fi
-
-          echo "" >> CHANGELOG.md
-          echo "" >> CHANGELOG.md
-          echo "## Installation" >> CHANGELOG.md
-          echo "" >> CHANGELOG.md
-          echo "1. Download the \`plg_system_googletagmanager-${{ steps.tag.outputs.tag }}.zip\` file below" >> CHANGELOG.md
-          echo "2. In Joomla administrator, go to Extensions → Manage → Install" >> CHANGELOG.md
-          echo "3. Upload and install the package" >> CHANGELOG.md
-          echo "4. Enable the plugin in System → Plugins" >> CHANGELOG.md
-          echo "5. Configure your GTM Container ID" >> CHANGELOG.md
+          echo "" >> release_notes.md
+          echo "## Installation" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "1. Download the \`plg_system_googletagmanager-${{ steps.tag.outputs.tag }}.zip\` file below" >> release_notes.md
+          echo "2. In Joomla administrator, go to Extensions → Manage → Install" >> release_notes.md
+          echo "3. Upload and install the package" >> release_notes.md
+          echo "4. Enable the plugin in System → Plugins" >> release_notes.md
+          echo "5. Configure your GTM Container ID" >> release_notes.md
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: Release ${{ steps.tag.outputs.tag }}
-          body_path: CHANGELOG.md
+          body_path: release_notes.md
           files: |
             build/plg_system_googletagmanager-${{ steps.tag.outputs.tag }}.zip
           draft: false
