@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension type="plugin" group="system" method="upgrade">
-    <name>System - Google Tag Manager</name>
+    <name>PLG_SYSTEM_GOOGLETAGMANAGER</name>
     <author>HKweb</author>
     <creationDate>26-10-2025</creationDate>
     <copyright>Copyright 2025 HKweb</copyright>
     <license>GPLv3 http://www.gnu.org/licenses/gpl.html</license>
     <authorEmail>info@hkweb.nl</authorEmail>
     <authorUrl>https://hkweb.nl</authorUrl>
-    <version>26.14.02</version>
-    <description>System plugin for Google Tag Manager integration with consent mode support (Joomla 6+)</description>
+    <version>26.14.04</version>
+    <description>PLG_SYSTEM_GOOGLETAGMANAGER_XML_DESCRIPTION</description>
 
     <php_minimum>8.3.0</php_minimum>
 
@@ -19,40 +19,80 @@
         <folder>src</folder>
     </files>
 
+    <languages folder="language">
+        <language tag="en-GB">en-GB/plg_system_googletagmanager.ini</language>
+        <language tag="en-GB">en-GB/plg_system_googletagmanager.sys.ini</language>
+    </languages>
+
     <config>
         <fields name="params">
             <fieldset name="basic">
                 <field
                     name="container_id"
                     type="text"
-                    label="Container ID"
+                    label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_CONTAINER_ID_LABEL"
                     default=""
-                    description="Enter your GTM Container Public ID (GTM-XXXX)"
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_CONTAINER_ID_DESC"
                 />
                 <field
                     name="server_side_tagging"
                     type="radio"
-                    label="Use server-side tagging?"
+                    label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_SERVER_SIDE_TAGGING_LABEL"
                     default="0"
                     layout="joomla.form.field.radio.switcher"
                 >
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
                 </field>
                 <field
                     name="server_side_note"
                     type="note"
-                    description="With server-side tagging, tracking requests are routed through your own server before being forwarded to Google Tag Manager. This improves data accuracy, reduces the amount of JavaScript running in the visitor&apos;s browser, and gives you full control over what data leaves your infrastructure. &lt;a href=&quot;https://developers.google.com/tag-platform/tag-manager/server-side&quot; target=&quot;_blank&quot; rel=&quot;noopener noreferrer&quot;&gt;Learn more about server-side tagging&lt;/a&gt;"
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_SERVER_SIDE_NOTE_DESC"
                     showon="server_side_tagging:1"
                 />
                 <field
                     name="server_side_domain"
                     type="url"
-                    label="Server-side GTM Domain"
+                    label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_SERVER_SIDE_DOMAIN_LABEL"
                     default=""
-                    description="Enter the base URL of your server-side GTM instance (e.g. https://sst.example.com). GTM scripts will be loaded from this domain instead of googletagmanager.com."
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_SERVER_SIDE_DOMAIN_DESC"
                     filter="url"
                     showon="server_side_tagging:1"
+                />
+                <field
+                    name="server_side_path_note"
+                    type="note"
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_SERVER_SIDE_PATH_NOTE_DESC"
+                    showon="server_side_tagging:1"
+                />
+                <field
+                    name="server_side_path"
+                    type="text"
+                    label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_SERVER_SIDE_PATH_LABEL"
+                    default=""
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_SERVER_SIDE_PATH_DESC"
+                    showon="server_side_tagging:1"
+                />
+            </fieldset>
+            <fieldset name="advanced" label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELDSET_ADVANCED">
+                <field
+                    name="gtm_environments_note"
+                    type="note"
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_GTM_ENVIRONMENTS_NOTE_DESC"
+                />
+                <field
+                    name="gtm_auth"
+                    type="text"
+                    label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_GTM_AUTH_LABEL"
+                    default=""
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_GTM_AUTH_DESC"
+                />
+                <field
+                    name="gtm_preview"
+                    type="text"
+                    label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_GTM_PREVIEW_LABEL"
+                    default=""
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_GTM_PREVIEW_DESC"
                 />
             </fieldset>
         </fields>

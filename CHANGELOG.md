@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.14.04] - 2026-04-03
+
+### Added
+- Language files (`language/en-GB/plg_system_googletagmanager.ini` and `.sys.ini`) for full i18n support
+- Release workflow now includes `language/` folder in the installable ZIP
+
+### Changed
+- All hardcoded UI strings in `googletagmanager.xml` replaced with language constant keys
+- `<name>` and `<description>` in the manifest now use translatable keys
+- Yes/No radio options use built-in Joomla constants (`JYES`/`JNO`)
+- `<languages>` section added to manifest so Joomla installs the language files on extension install
+
+## [26.14.03] - 2026-04-03
+
+### Added
+- `server_side_path` config field to support sGTM instances served from a custom path prefix
+- `gtm_auth` and `gtm_preview` config fields for targeting specific GTM environments
+- `getGtmBaseUrl()` helper combining domain and path into a single base URL
+- `getGtmEnvironmentParams()` helper returning environment query params (gtm_auth, gtm_preview, gtm_cookies_win)
+
+### Changed
+- `$gtmBaseUrl` and `$gtmId` are now properly escaped before JS/HTML interpolation (`addcslashes` for JS string literals, `htmlspecialchars` for HTML attributes)
+- `getServerSideDomain()` now enforces `https://` on the configured sGTM domain
+- Server-side tagging admin note corrected to accurately describe the sGTM data flow
+- `server_side_domain` field description updated to explicitly require `https://`
+
 ## [26.14.02] - 2026-04-02
 
 ### Added
