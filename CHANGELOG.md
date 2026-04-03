@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.14.06] - 2026-04-03
+
+### Added
+- `script_loader_url` config field: optional base URL from which `gtm.js` is served when it differs from the sGTM domain (e.g. Stape Custom Loader with "Use original GTM code" enabled)
+- `getScriptLoaderUrl()` method: returns the script loader URL when configured, falls back to `getGtmBaseUrl()`
+
+### Changed
+- Head script now uses `getScriptLoaderUrl()` instead of `getGtmBaseUrl()`, allowing the GTM loader and the noscript iframe to be served from different domains
+
 ## [26.14.05] - 2026-04-03
 
 ### Fixed

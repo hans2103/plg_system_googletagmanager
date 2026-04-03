@@ -7,7 +7,7 @@
     <license>GPLv3 http://www.gnu.org/licenses/gpl.html</license>
     <authorEmail>info@hkweb.nl</authorEmail>
     <authorUrl>https://hkweb.nl</authorUrl>
-    <version>26.14.05</version>
+    <version>26.14.06</version>
     <description>PLG_SYSTEM_GOOGLETAGMANAGER_XML_DESCRIPTION</description>
 
     <php_minimum>8.3.0</php_minimum>
@@ -56,6 +56,15 @@
                     label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_SERVER_SIDE_DOMAIN_LABEL"
                     default=""
                     description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_SERVER_SIDE_DOMAIN_DESC"
+                    filter="url"
+                    showon="server_side_tagging:1"
+                />
+                <field
+                    name="script_loader_url"
+                    type="url"
+                    label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_SCRIPT_LOADER_URL_LABEL"
+                    default=""
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_SCRIPT_LOADER_URL_DESC"
                     filter="url"
                     showon="server_side_tagging:1"
                 />
