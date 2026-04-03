@@ -257,7 +257,15 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 			}
 		}
 
-		return $this->scriptLoaderUrl ?? $this->getGtmBaseUrl();
+		// Append server_side_path when a custom loader URL is set, just as getGtmBaseUrl() does
+		// for the default sGTM domain. Falls back to getGtmBaseUrl() (which already includes
+		// the path) when no custom loader URL is configured.
+		if ($this->scriptLoaderUrl !== null)
+		{
+			return $this->scriptLoaderUrl . $this->getServerSidePath();
+		}
+
+		return $this->getGtmBaseUrl();
 	}
 
 	/**
