@@ -93,6 +93,22 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	private bool $scriptLoaderUrlResolved = false;
 
 	/**
+	 * Cached custom loader configuration (filename + obfuscated params)
+	 *
+	 * @var    array{filename: string, params: string}|null
+	 * @since  26.14.07
+	 */
+	private ?array $customLoader = null;
+
+	/**
+	 * Whether the custom loader has been resolved
+	 *
+	 * @var    bool
+	 * @since  26.14.07
+	 */
+	private bool $customLoaderResolved = false;
+
+	/**
 	 * Returns an array of events this subscriber will listen to.
 	 *
 	 * @return  array
@@ -238,6 +254,38 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	}
 
 	/**
+	 * Get custom loader configuration for enhanced ad blocker protection
+	 *
+	 * Returns the obfuscated script filename and query string when both are configured
+	 * (e.g. from Stape's Custom Loader power-up with enhanced ad blocker protection),
+	 * or null to fall back to the standard gtm.js loader.
+	 *
+	 * @return  array{filename: string, params: string}|null
+	 *
+	 * @since   26.14.07
+	 */
+	private function getCustomLoader(): ?array
+	{
+		if (!$this->customLoaderResolved)
+		{
+			$this->customLoaderResolved = true;
+
+			if ((bool) $this->params->get('server_side_tagging', 0))
+			{
+				$filename = trim((string) $this->params->get('custom_script_filename', ''));
+				$params   = trim((string) $this->params->get('custom_script_params', ''));
+
+				if ($filename !== '' && $params !== '')
+				{
+					$this->customLoader = ['filename' => $filename, 'params' => $params];
+				}
+			}
+		}
+
+		return $this->customLoader;
+	}
+
+	/**
 	 * Get additional GTM environment query parameters for gtm_auth / gtm_preview
 	 *
 	 * Returns an array with 'gtm_auth', 'gtm_preview', and 'gtm_cookies_win' keys
@@ -325,19 +373,32 @@ JS;
 
 		$document->getWebAssetManager()->addInlineScript($consentScript);
 
-		// Escape values for use inside a JS single-quoted string literal
-		$gtmBaseUrl       = $this->getScriptLoaderUrl();
-		$jsEscapedBaseUrl = addcslashes($gtmBaseUrl, "\\'");
-		$jsEscapedGtmId   = addcslashes($gtmId, "\\'");
+		$jsEscapedBaseUrl = addcslashes($this->getScriptLoaderUrl(), "\\'");
+		$customLoader     = $this->getCustomLoader();
 
-		// Build optional environment query string (values are rawurlencode'd, safe in JS strings)
-		$envParams      = $this->getGtmEnvironmentParams();
-		$jsEnvParamsStr = $envParams !== [] ? '&' . http_build_query($envParams) : '';
+		if ($customLoader !== null)
+		{
+			// Enhanced ad blocker protection: obfuscated filename and pre-built query string
+			// (e.g. Stape Custom Loader with enhanced protection enabled).
+			// The container ID is already embedded inside the obfuscated params string.
+			$jsEscapedFilename = addcslashes($customLoader['filename'], "\\'");
+			$jsEscapedParams   = addcslashes($customLoader['params'], "\\'");
 
-		// Google Tag Manager main script
-		$headScript = <<<JS
+			$headScript = <<<JS
+(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s);j.async=true;j.src='{$jsEscapedBaseUrl}/{$jsEscapedFilename}?'+i;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{$jsEscapedParams}');
+JS;
+		}
+		else
+		{
+			// Standard loader: build URL from container ID
+			$jsEscapedGtmId = addcslashes($gtmId, "\\'");
+			$envParams      = $this->getGtmEnvironmentParams();
+			$jsEnvParamsStr = $envParams !== [] ? '&' . http_build_query($envParams) : '';
+
+			$headScript = <<<JS
 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='{$jsEscapedBaseUrl}/gtm.js?id='+i+dl+'{$jsEnvParamsStr}';f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{$jsEscapedGtmId}');
 JS;
+		}
 
 		$document->getWebAssetManager()->addInlineScript($headScript);
 	}

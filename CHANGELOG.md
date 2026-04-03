@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.14.07] - 2026-04-03
+
+### Added
+- `custom_script_filename` and `custom_script_params` config fields for enhanced ad blocker protection (e.g. Stape Custom Loader with "Enhanced ad blocker protection" enabled)
+- `getCustomLoader()` method returning the obfuscated filename + params pair when both are configured, or null to fall back to the standard loader
+- When custom loader is active the plugin generates a stripped IIFE (no `dl` variable) matching the obfuscated snippet format exactly
+
 ## [26.14.06] - 2026-04-03
 
 ### Added
