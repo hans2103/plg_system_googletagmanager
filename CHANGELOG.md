@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.14.09] - 2026-04-03
+
+### Fixed
+- Noscript iframe URL now uses `server_side_domain` only — `server_side_path` is for the head script loader and must not be appended to the `ns.html` endpoint
+
 ## [26.14.08] - 2026-04-03
 
 ### Added

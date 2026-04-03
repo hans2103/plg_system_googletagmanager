@@ -524,9 +524,11 @@ JS;
 			return;
 		}
 
-		// Build noscript iframe src with all query parameters, then HTML-escape the full URL
-		$queryParams = array_merge(['id' => $gtmId], $this->getGtmEnvironmentParams());
-		$noscriptSrc = $this->getGtmBaseUrl() . '/ns.html?' . http_build_query($queryParams);
+		// Build noscript iframe src with all query parameters, then HTML-escape the full URL.
+		// The noscript uses the sGTM domain only — server_side_path is for the head script loader, not ns.html.
+		$noscriptBase = $this->getServerSideDomain() ?? self::GTM_DEFAULT_BASE_URL;
+		$queryParams  = array_merge(['id' => $gtmId], $this->getGtmEnvironmentParams());
+		$noscriptSrc  = $noscriptBase . '/ns.html?' . http_build_query($queryParams);
 		$htmlSrc     = htmlspecialchars($noscriptSrc, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 
 		// Google Tag Manager noscript fallback
