@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.15.00] - 2026-04-07
+
+### Added
+- `stape_loader_script` textarea field: paste the complete code snippet from the Stape Custom Loader dashboard — the plugin strips `<script>` tags and HTML comments automatically. Takes priority over all other loader settings (API fetch, Container Identifier, Manual override)
+- `stape_api_key` config field: when provided, used as the URL identifier when calling Stape's custom-loader API (the API accepts either the container identifier or the API key)
+- `getPastedLoaderScript()` method: reads and sanitises the pasted script, returning null when empty
+
+### Changed
+- Stape API request now uses `source: other` (valid enum value) instead of `joomla`
+- Stape API now called without auth header (matching the WordPress plugin behaviour — the endpoint is unauthenticated)
+- `getStapeApiScript()` uses the API key as the URL token when configured, falling back to the container identifier
+- Cache key bumped (`stape_v2_`) to invalidate stale failure results from previous attempts
+- Language files recreated and extended with new field strings for `stape_api_key`, `stape_loader_script`, and `cookie_keeper`
+
 ## [26.14.10] - 2026-04-03
 
 ### Fixed
