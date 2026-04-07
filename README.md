@@ -1,15 +1,23 @@
 # Joomla System Plugin - Google Tag Manager
 
-A Joomla 6.x system plugin for Google Tag Manager integration with consent mode support for GDPR compliance.
+A Joomla 6.x system plugin for Google Tag Manager (GTM) integration with GDPR-compliant consent mode support and full server-side tagging (sGTM) capabilities.
 
 ## Features
 
-- Google Tag Manager integration
-- GDPR consent mode support
-- Automatic GTM script injection in HTML head
-- Noscript fallback support
+- Google Tag Manager integration (standard and server-side)
+- GDPR consent mode support (grants/denials wired to `localStorage`)
+- Automatic GTM script injection in HTML `<head>`
+- Noscript `<iframe>` fallback for users without JavaScript
 - Configurable GTM Container ID
 - Frontend-only execution
+- GTM Environments support (test before publishing live)
+- Server-side tagging via your own sGTM domain
+- **Stape Custom Loader** support for enhanced ad blocker protection:
+  - Paste the full snippet from the Stape dashboard
+  - Or let the plugin call the Stape API to fetch it automatically
+  - Or enter a Container Identifier for local deterministic obfuscation
+  - Or enter the filename and params manually
+- **Cookie Keeper** support for Safari ITP bypass (Stape power-up)
 
 ## Requirements
 
@@ -22,76 +30,171 @@ A Joomla 6.x system plugin for Google Tag Manager integration with consent mode 
 2. In Joomla administrator, go to **Extensions** → **Manage** → **Install**
 3. Upload and install the package
 4. Go to **System** → **Plugins**
-5. Find "System - Google Tag Manager" and enable it
+5. Find **System - Google Tag Manager** and enable it
 6. Configure your GTM Container ID in the plugin settings
 
 ## Configuration
 
-After installation and activation:
+### Basic — Standard GTM
 
 1. Navigate to **Extensions** → **Plugins**
-2. Search for "Google Tag Manager"
-3. Click on the plugin to open settings
-4. Enter your GTM Container ID (e.g., GTM-XXXXXXX)
-5. Save the settings
+2. Search for **Google Tag Manager** and open the plugin
+3. Enter your **Container ID** (e.g. `GTM-XXXXXXX`)
+4. Save and verify the GTM snippet appears in your page source
+
+### Advanced — GTM Environments
+
+Use this to target a specific GTM environment (e.g. a staging preview) instead of the published live container.
+
+| Field | Description |
+|---|---|
+| **GTM Environment Auth Token** | The `gtm_auth` value from **GTM Admin → Environments → Actions → Get snippet** |
+| **GTM Environment Name** | The `gtm_preview` value from the same snippet URL (e.g. `env-2`) |
+
+Both fields must be filled in together. Leave both empty to use the live container.
+
+---
+
+## Server-Side Tagging
+
+Enable **Use server-side tagging?** to route GTM through your own sGTM container. The GTM JavaScript tag still loads in the visitor's browser, but tracking requests go to your server instead of directly to Google. Your server then forwards the data to configured destinations.
+
+[Learn more about server-side tagging](https://developers.google.com/tag-platform/tag-manager/server-side)
+
+### Required
+
+| Field | Description |
+|---|---|
+| **Server-side GTM Domain** | The full URL of your sGTM container (e.g. `https://sst.example.com`). Must match the **Server Container URL** in **GTM Admin → Container Settings**. |
+
+### Optional
+
+| Field | Description |
+|---|---|
+| **Script Loader URL** | Override the domain used to load `gtm.js` in the `<head>`. Use this when your sGTM provider proxies the loader through a different domain (e.g. Stape Custom Loader with **Use original GTM code** enabled, e.g. `https://example.com/mos`). The noscript fallback always uses the sGTM domain above. |
+| **Server-side GTM Path** | Sub-path prefix if your sGTM scripts are not served from the domain root (e.g. `/gtm`). Leave empty in most setups. |
+
+---
+
+## Stape Custom Loader
+
+The Stape [Custom Loader](https://stape.io/blog/custom-loader-for-google-tag-manager) power-up serves `gtm.js` through an obfuscated filename and query string to reduce ad blocker interference. The plugin supports several configuration methods, evaluated in priority order:
+
+### Priority 1 — Paste snippet (recommended)
+
+Copy the full code snippet from **Stape Dashboard → Container → Custom Loader** and paste it into the **Stape Custom Loader Script** textarea. The plugin strips `<script>` tags and HTML comments automatically. This method always produces the exact script Stape generates.
+
+### Priority 2 — Stape API (automatic)
+
+Fill in a **Container Identifier** and optionally a **Stape API Key**. The plugin calls Stape's API to fetch the obfuscated script and caches the result for 3 hours. If the API is unavailable the plugin falls back to local generation (Priority 3).
+
+| Field | Where to find it |
+|---|---|
+| **Container Identifier** | Stape Dashboard → Container Settings (e.g. `kpxlywlp`) |
+| **Stape API Key** | Stape Dashboard → Container Settings → Container API Key |
+
+### Priority 3 — Local generation (automatic fallback)
+
+When only a **Container Identifier** is set (and the API is unavailable or not configured), the plugin generates the obfuscated filename and query string locally using the same deterministic algorithm as Stape. The result is stable for a given identifier + GTM ID combination and requires no caching.
+
+### Priority 4 — Manual override
+
+Enter the exact values copied from the Stape-generated snippet:
+
+| Field | Example |
+|---|---|
+| **Custom Script Filename** | `1afjvqgtsh.js` |
+| **Custom Script Params** | `c1ky2=ARdJICU7...` |
+
+Both fields must be filled in together.
+
+### Cookie Keeper (Safari ITP support)
+
+Enable **Cookie Keeper** to activate Stape's Cookie Keeper power-up. Safari 16.4+ visitors load the GTM script via a `kp`-prefixed identifier. Stape's server detects this prefix and responds with a server-side cookie carrying a 2-year expiry, bypassing Safari's ITP 7-day cap on JavaScript-set cookies.
+
+Requires **Container Identifier** to be set.
+
+---
 
 ## Consent Mode
 
-The plugin implements Google's consent mode for GDPR compliance:
+The plugin injects a consent mode initialisation block before the GTM loader. Defaults are applied on first visit; on subsequent visits the stored consent from `localStorage` (`consentMode`) is used.
 
-- **Default state**: Analytics, personalization, functionality, and security storage are granted
-- **Restricted by default**: Ad storage, ad user data, and ad personalization are denied
-- **Customizable**: Users can update consent preferences via localStorage (`consentMode`)
+| Storage type | Default |
+|---|---|
+| `ad_storage` | denied |
+| `ad_user_data` | denied |
+| `ad_personalization` | denied |
+| `analytics_storage` | denied |
+| `personalization_storage` | denied |
+| `functionality_storage` | granted |
+| `security_storage` | granted |
+
+A `gtm_consent_update` event is pushed to `dataLayer` after consent defaults are set, allowing GTM triggers to fire on consent state.
+
+To update consent from your cookie banner, write a JSON object to `localStorage` under the key `consentMode` and reload the page (or push a `consent` update directly to `dataLayer`).
+
+---
 
 ## Development
-
-This plugin is developed and maintained by [HKweb](https://hkweb.nl).
 
 ### Version Numbering
 
 This project uses the format `YY.WW.NN`:
-- `YY` - Last 2 digits of the year (e.g., 26 for 2026)
-- `WW` - ISO week number (e.g., 03 for week 3)
-- `NN` - Incremental number starting at 00 for each week
 
-Example: `26.03.00`, `26.03.01`, `26.03.02`
+- `YY` — Last 2 digits of the year (e.g. `26` for 2026)
+- `WW` — ISO week number (e.g. `03` for week 3)
+- `NN` — Incremental counter starting at `00` each week
+
+Example: `26.03.00`, `26.03.01`, `26.04.00`
+
+The version must be updated manually in `googletagmanager.xml`. The `update.xml` file is updated automatically by GitHub Actions on release.
 
 ### Git Workflow
 
-This project uses git-flow branching model:
-- `main` - Production-ready releases
-- `develop` - Integration branch for features
-- `feature/*` - New features (branch from develop)
-- `release/*` - Release preparation (branch from develop)
-- `hotfix/*` - Production fixes (branch from main)
+This project follows the git-flow branching model:
+
+| Branch | Purpose |
+|---|---|
+| `main` | Production-ready releases only |
+| `develop` | Integration branch (default for development) |
+| `feature/*` | New features (branch from `develop`) |
+| `release/*` | Release preparation (branch from `develop`) |
+| `hotfix/*` | Production fixes (branch from `main`) |
 
 ### Building a Release
 
-Releases are automatically created when a new tag is pushed to GitHub:
-
 ```bash
-# Create a new release using git-flow
-git flow release start 26.03.00
+# Start a new release
+git flow release start 26.04.00
 
-# Update version in googletagmanager.xml if needed
-# Commit any final changes
+# Update version in googletagmanager.xml
+# Update CHANGELOG.md
 
-# Finish the release (creates tag and merges to main and develop)
-git flow release finish 26.03.00
+# Finish the release (creates tag, merges to main and develop)
+git flow release finish 26.04.00
 
 # Push everything including tags
 git push origin main develop --tags
 ```
 
-The GitHub Actions workflow will automatically:
-1. Create a release on GitHub
-2. Build an installable ZIP package
-3. Attach the package to the release
-4. Generate a changelog from commits
+The GitHub Actions workflow automatically:
+
+1. Creates a GitHub release
+2. Builds an installable ZIP package (`plg_system_googletagmanager-{version}.zip`) containing:
+   - `googletagmanager.xml`
+   - `services/`
+   - `src/`
+   - `language/`
+3. Attaches the package to the release
+4. Extracts the changelog section from `CHANGELOG.md`
+5. Updates `update.xml` with the new version and download URL
+
+---
 
 ## License
 
-GNU General Public License v3.0 or later
+GNU General Public License v3.0 or later — see [LICENSE](https://www.gnu.org/licenses/gpl-3.0.html)
 
 ## Author
 
