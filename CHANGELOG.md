@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.15.01] - 2026-04-07
+
+### Fixed
+- `HttpFactory::getHttp()` (deprecated since Joomla 6.0, removed in 7.0) replaced with `(new \Joomla\Http\HttpFactory())->getHttp()` — uses the vendor package instance method directly
+
+### Changed
+- README updated with full documentation for server-side tagging, Stape Custom Loader configuration methods, Cookie Keeper, consent mode defaults, and GTM Environments
+
 ## [26.15.00] - 2026-04-07
 
 ### Added
