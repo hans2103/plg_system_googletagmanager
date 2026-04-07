@@ -17,9 +17,11 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Document\HtmlDocument;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Http\HttpFactory;
+use Joomla\Http\HttpFactory;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
+use Random\Engine\Mt19937;
+use Random\Randomizer;
 
 /**
  * System plugin to add Google Tag Manager script to head and beginning of body
@@ -404,18 +406,18 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 		$apiUrl = 'https://api.app.stape.io/api/v2/container/' . rawurlencode($identifier) . '/custom-loader';
 
 		$payload = json_encode([
-			'webGtmId'            => $gtmId,
-			'domain'              => $domain,
-			'source'              => 'other',
-			'dataLayerObjectName' => 'dataLayer',
-			'sameOriginPath'      => $path,
-		]);
+            'webGtmId'            => $gtmId,
+            'domain'              => $domain,
+            'source'              => 'other',
+            'dataLayerObjectName' => 'dataLayer',
+            'sameOriginPath'      => $path,
+        ], JSON_THROW_ON_ERROR);
 
 		$headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json'];
 
 		try
 		{
-			$http     = HttpFactory::getHttp();
+			$http     = (new HttpFactory())->getHttp();
 			$response = $http->post(
 				$apiUrl,
 				$payload,
@@ -428,7 +430,7 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 				return null;
 			}
 
-			$data = json_decode($response->body, true);
+			$data = json_decode($response->body, true, 512, JSON_THROW_ON_ERROR);
 
 			if (!is_array($data) || empty($data['body']['jsCode']))
 			{
@@ -513,7 +515,7 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 		$len   = strlen($chars);
 
 		// Seed the RNG deterministically so the same inputs always produce the same output
-		$rng = new \Random\Randomizer(new \Random\Engine\Mt19937(abs(crc32($identifier . $gtmId))));
+		$rng = new Randomizer(new Mt19937(abs(crc32($identifier . $gtmId))));
 
 		// --- Filename prefix: 1–5 chars, must not end in 'kp' or 'gt' ---
 		$prefix = '';
@@ -575,7 +577,7 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 		{
 			$this->cookieKeeperResolved = true;
 
-			if ((bool) $this->params->get('server_side_tagging', 0))
+			if ($this->params->get('server_side_tagging', 0))
 			{
 				$this->cookieKeeperEnabled = (bool) $this->params->get('cookie_keeper', 0);
 			}
@@ -612,7 +614,7 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	}
 
 	/**
-	 * Add GTM script to head
+	 * Add a GTM script to <head>
 	 *
 	 * Adds consent mode initialization and GTM tracking script to the document head.
 	 *
