@@ -7,7 +7,7 @@
     <license>GPLv3 http://www.gnu.org/licenses/gpl.html</license>
     <authorEmail>info@hkweb.nl</authorEmail>
     <authorUrl>https://hkweb.nl</authorUrl>
-    <version>26.14.10</version>
+    <version>26.15.00</version>
     <description>PLG_SYSTEM_GOOGLETAGMANAGER_XML_DESCRIPTION</description>
 
     <php_minimum>8.3.0</php_minimum>
@@ -75,6 +75,15 @@
                     showon="server_side_tagging:1"
                 />
                 <field
+                    name="stape_loader_script"
+                    type="textarea"
+                    label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_STAPE_LOADER_SCRIPT_LABEL"
+                    default=""
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_STAPE_LOADER_SCRIPT_DESC"
+                    rows="5"
+                    showon="server_side_tagging:1"
+                />
+                <field
                     name="container_identifier"
                     type="text"
                     label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_CONTAINER_IDENTIFIER_LABEL"
@@ -82,6 +91,26 @@
                     description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_CONTAINER_IDENTIFIER_DESC"
                     showon="server_side_tagging:1"
                 />
+                <field
+                    name="stape_api_key"
+                    type="text"
+                    label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_STAPE_API_KEY_LABEL"
+                    default=""
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_STAPE_API_KEY_DESC"
+                    showon="server_side_tagging:1"
+                />
+                <field
+                    name="cookie_keeper"
+                    type="radio"
+                    label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_COOKIE_KEEPER_LABEL"
+                    default="0"
+                    layout="joomla.form.field.radio.switcher"
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_COOKIE_KEEPER_DESC"
+                    showon="server_side_tagging:1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
                 <field
                     name="custom_loader_manual_note"
                     type="note"

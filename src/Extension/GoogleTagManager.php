@@ -16,6 +16,8 @@ namespace HKweb\Plugin\System\GoogleTagManager\Extension;
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Document\HtmlDocument;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Http\HttpFactory;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
 
@@ -107,6 +109,22 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	 * @since  26.14.07
 	 */
 	private bool $customLoaderResolved = false;
+
+	/**
+	 * Whether Cookie Keeper (Safari ITP support) is enabled
+	 *
+	 * @var    bool
+	 * @since  26.14.12
+	 */
+	private bool $cookieKeeperEnabled = false;
+
+	/**
+	 * Whether the cookie keeper enabled state has been resolved
+	 *
+	 * @var    bool
+	 * @since  26.14.12
+	 */
+	private bool $cookieKeeperResolved = false;
 
 	/**
 	 * Character set used when generating obfuscated loader strings
@@ -269,6 +287,163 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	}
 
 	/**
+	 * Get a manually pasted custom loader script from the plugin settings
+	 *
+	 * Returns the raw JavaScript (stripped of any <script> wrapper) when the field is filled,
+	 * or null when empty. This has the highest priority — it bypasses the Stape API, local
+	 * generation, and manual filename/params fields.
+	 *
+	 * @return  string|null  JavaScript to inject, or null when not configured
+	 *
+	 * @since   26.14.13
+	 */
+	private function getPastedLoaderScript(): ?string
+	{
+		if (!(bool) $this->params->get('server_side_tagging', 0))
+		{
+			return null;
+		}
+
+		$script = trim((string) $this->params->get('stape_loader_script', ''));
+
+		if ($script === '')
+		{
+			return null;
+		}
+
+		// Strip <script> tags and HTML comments in case the user pasted the full snippet
+		$script = (string) preg_replace('/<script\b[^>]*>(.*?)<\/script>/is', '$1', $script);
+		$script = (string) preg_replace('/<!--.*?-->/s', '', $script);
+		$script = trim($script);
+
+		return $script !== '' ? $script : null;
+	}
+
+	/**
+	 * Fetch the obfuscated GTM loader script from Stape's API
+	 *
+	 * Returns the jsCode string when the API call succeeds, or null when the container
+	 * identifier is not configured, the API is unreachable, or the response is invalid.
+	 * The result is cached for 3 hours (matching Stape's WordPress plugin behaviour).
+	 *
+	 * @return  string|null  Raw JavaScript to inject, or null to fall back to local generation
+	 *
+	 * @since   26.14.11
+	 */
+	private function getStapeApiScript(): ?string
+	{
+		// The API key (or container identifier) is used as the URL path segment.
+		// If an explicit API key is configured use that; otherwise fall back to the container identifier.
+		$apiKey     = trim((string) $this->params->get('stape_api_key', ''));
+		$identifier = trim((string) $this->params->get('container_identifier', ''));
+		$urlToken   = $apiKey !== '' ? $apiKey : $identifier;
+		$gtmId      = $this->getGTMId();
+
+		if ($urlToken === '' || $gtmId === null)
+		{
+			return null;
+		}
+
+		$cacheKey = md5('stape_v2_' . $urlToken . $gtmId . $this->getScriptLoaderUrl());
+
+		// Try the Joomla cache (3 hours = 180 minutes)
+		try
+		{
+			$cache = Factory::getCache('plg_system_googletagmanager', '');
+			$cache->setCaching(true);
+			$cache->setLifeTime(180);
+
+			$cached = $cache->get($cacheKey);
+
+			if ($cached !== false)
+			{
+				return $cached !== '' ? $cached : null;
+			}
+		}
+		catch (\Throwable)
+		{
+			// Cache unavailable — continue to API call
+			$cache = null;
+		}
+
+		$script = $this->fetchStapeApi($urlToken, $gtmId);
+
+		// Store in cache; empty string signals a failed API call so we don't hammer the endpoint
+		if (isset($cache))
+		{
+			try
+			{
+				$cache->store($script ?? '', $cacheKey);
+			}
+			catch (\Throwable)
+			{
+				// Ignore cache write failures
+			}
+		}
+
+		return $script;
+	}
+
+	/**
+	 * Call the Stape custom-loader API and return the jsCode
+	 *
+	 * @param   string  $identifier  The Stape container identifier
+	 * @param   string  $gtmId       The GTM container ID
+	 *
+	 * @return  string|null  The jsCode from the API response, or null on failure
+	 *
+	 * @since   26.14.11
+	 */
+	private function fetchStapeApi(string $identifier, string $gtmId): ?string
+	{
+		$scriptLoaderUrl = $this->getScriptLoaderUrl();
+		$parsed          = parse_url($scriptLoaderUrl);
+		$domain          = $parsed['host'] ?? '';
+		$path            = isset($parsed['path']) ? rtrim($parsed['path'], '/') : '';
+
+		$apiUrl = 'https://api.app.stape.io/api/v2/container/' . rawurlencode($identifier) . '/custom-loader';
+
+		$payload = json_encode([
+			'webGtmId'            => $gtmId,
+			'domain'              => $domain,
+			'source'              => 'other',
+			'dataLayerObjectName' => 'dataLayer',
+			'sameOriginPath'      => $path,
+		]);
+
+		$headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json'];
+
+		try
+		{
+			$http     = HttpFactory::getHttp();
+			$response = $http->post(
+				$apiUrl,
+				$payload,
+				$headers,
+				10
+			);
+
+			if ($response->code !== 200)
+			{
+				return null;
+			}
+
+			$data = json_decode($response->body, true);
+
+			if (!is_array($data) || empty($data['body']['jsCode']))
+			{
+				return null;
+			}
+
+			return (string) $data['body']['jsCode'];
+		}
+		catch (\Throwable)
+		{
+			return null;
+		}
+	}
+
+	/**
 	 * Get custom loader configuration for enhanced ad blocker protection
 	 *
 	 * Priority order:
@@ -381,6 +556,35 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	}
 
 	/**
+	 * Get whether Cookie Keeper (Safari ITP support) is enabled
+	 *
+	 * When enabled, Safari 16.4+ visitors load the GTM loader via a kp-prefixed
+	 * container identifier. Stape's server-side container detects this prefix and
+	 * responds with a long-lived server-side cookie, bypassing Safari's ITP
+	 * 7-day cap on JavaScript-set cookies.
+	 *
+	 * Requires server-side tagging and a container identifier to be configured.
+	 *
+	 * @return  bool
+	 *
+	 * @since   26.14.12
+	 */
+	private function getCookieKeeperEnabled(): bool
+	{
+		if (!$this->cookieKeeperResolved)
+		{
+			$this->cookieKeeperResolved = true;
+
+			if ((bool) $this->params->get('server_side_tagging', 0))
+			{
+				$this->cookieKeeperEnabled = (bool) $this->params->get('cookie_keeper', 0);
+			}
+		}
+
+		return $this->cookieKeeperEnabled;
+	}
+
+	/**
 	 * Get additional GTM environment query parameters for gtm_auth / gtm_preview
 	 *
 	 * Returns an array with 'gtm_auth', 'gtm_preview', and 'gtm_cookies_win' keys
@@ -458,6 +662,7 @@ if (localStorage.getItem('consentMode') === null) {
 		'personalization_storage': 'denied',
 		'functionality_storage': 'granted',
 		'security_storage': 'granted',
+		'wait_for_update': 500,
 	});
 } else {
 	gtag('consent', 'default', JSON.parse(localStorage.getItem('consentMode')));
@@ -468,10 +673,51 @@ JS;
 
 		$document->getWebAssetManager()->addInlineScript($consentScript);
 
+		// Highest priority: manually pasted custom loader script from the Stape dashboard.
+		$pastedScript = $this->getPastedLoaderScript();
+
+		if ($pastedScript !== null)
+		{
+			$document->getWebAssetManager()->addInlineScript($pastedScript);
+
+			return;
+		}
+
+		// When a container identifier is set, fetch the obfuscated script from Stape's API.
+		// The API returns the exact jsCode Stape generates, including the correct obfuscated
+		// filename and encrypted params. Falls back to local generation on failure.
+		$stapeScript = $this->getStapeApiScript();
+
+		if ($stapeScript !== null)
+		{
+			$document->getWebAssetManager()->addInlineScript($stapeScript);
+
+			return;
+		}
+
 		$jsEscapedBaseUrl = addcslashes($this->getScriptLoaderUrl(), "\\'");
 		$customLoader     = $this->getCustomLoader();
 
-		if ($customLoader !== null)
+		if ($customLoader !== null && $this->getCookieKeeperEnabled())
+		{
+			// Cookie Keeper: extends cookie lifetime for Safari 16.4+ visitors by routing the
+			// loader request through a kp-prefixed identifier. Stape's server detects the prefix
+			// and responds with a server-side Set-Cookie header (2-year expiry), bypassing
+			// Safari's ITP 7-day cap on JavaScript-set cookies.
+			//
+			// Safari visitors get: {baseUrl}/kp{identifier}.js?{params}&bi={browserId}
+			// Other visitors get the standard obfuscated loader for ad blocker protection.
+			//
+			// Browser ID priority: _sbp cookie (set by Stape's server) → _stape_id localStorage.
+			$jsEscapedIdentifier = addcslashes(trim((string) $this->params->get('container_identifier', '')), "\\'");
+			$jsEscapedFilename   = addcslashes($customLoader['filename'], "\\'");
+			$jsEscapedParams     = addcslashes($customLoader['params'], "\\'");
+
+			$headScript = <<<JS
+(function(w,d,s,l){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),bi='',ck=d.cookie.split(';');for(var k=0;k<ck.length;k++){var p=ck[k].split('=');if(p[0].trim()==='_sbp'){bi=p[1]?p[1].trim():'';break;}}if(!bi){try{bi=localStorage.getItem('_stape_id')||'';}catch(e){}}var sm=new RegExp('Version/([0-9._]+)(.*Mobile)?.*Safari.*').exec(w.navigator.userAgent),isCk=!!sm&&16.4<=parseFloat(sm[1]),id='{$jsEscapedIdentifier}';if(isCk){id=8<id.length?id.replace(/([a-z]{8}\$)/,'kp\$1'):'kp'+id;}j.async=true;j.src=isCk?'{$jsEscapedBaseUrl}/'+id+'.js?{$jsEscapedParams}'+(bi?'&bi='+encodeURIComponent(bi):''):'{$jsEscapedBaseUrl}/{$jsEscapedFilename}?{$jsEscapedParams}';f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer');
+JS;
+		}
+		elseif ($customLoader !== null)
 		{
 			// Enhanced ad blocker protection: obfuscated filename and pre-built query string
 			// (e.g. Stape Custom Loader with enhanced protection enabled).
