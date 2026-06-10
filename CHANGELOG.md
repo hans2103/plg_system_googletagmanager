@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.24.00] - 2026-06-10
+
+### Fixed
+- Consent mode now unwraps the `consentMode` object when the cookie banner stores it wrapped with metadata (`{ consentMode: {...}, expiration: ... }`); previously the whole wrapper was passed to `gtag('consent', 'default', …)` and silently ignored, dropping the visitor's stored choice on return visits
+- Expired stored consent (past its `expiration` timestamp) now falls back to the denied defaults so the banner can re-prompt, instead of replaying a stale choice
+- Stored consent parsing wrapped in `try/catch` so a malformed `consentMode` value can no longer break the head script
+
+### Added
+- `docs/gtm-starter-container.json`: importable Google Tag Manager starter container (GA4 tag, accessible NL/EN cookie-wall banner, consent-state variables, and the `gtm_consent_update` trigger), genericized with placeholder IDs
+
+### Changed
+- README documents both the flat and wrapped `consentMode` shapes, the expiration fallback, and a new "Google Tag Manager container" section covering the starter container and its contents
+
 ## [26.15.01] - 2026-04-07
 
 ### Fixed

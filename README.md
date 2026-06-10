@@ -134,6 +134,31 @@ A `gtm_consent_update` event is pushed to `dataLayer` after consent defaults are
 
 To update consent from your cookie banner, write a JSON object to `localStorage` under the key `consentMode` and reload the page (or push a `consent` update directly to `dataLayer`).
 
+The stored value may be either a flat object of consent types (`{ "ad_storage": "granted", ... }`) or wrapped by the banner with extra metadata (`{ "consentMode": { "ad_storage": "granted", ... }, "expiration": ... }`). The plugin unwraps the inner `consentMode` object automatically when present, so both shapes work.
+
+When the wrapped value carries an `expiration` timestamp (milliseconds since epoch) that has passed, the plugin discards the stored choice and falls back to the denied defaults, letting your banner re-prompt for fresh consent instead of replaying a stale choice.
+
+---
+
+## Google Tag Manager container
+
+This plugin only injects the GTM loader and the consent-mode bootstrap; the tags, triggers and consent logic live inside your GTM container. A ready-to-import starter container is provided at [`docs/gtm-starter-container.json`](docs/gtm-starter-container.json).
+
+**Import it:** GTM → *Admin* → *Import Container* → choose the file → import into a new or existing workspace (use *Merge* to keep your existing setup).
+
+It contains:
+
+| Item | Type | Purpose |
+|---|---|---|
+| `00.01 - Google Tag \| GA4` | Tag (Google tag) | Loads GA4; fires on the `gtm_consent_update` event |
+| `98.00 - Consent Mode \| Cookie Wall` | Tag (Custom HTML) | Accessible cookie-wall modal (NL/EN) that writes the wrapped `consentMode` value and calls `gtag('consent', 'update', …)` |
+| `Event - GTM Consent Update` | Trigger | Custom event matching `gtm_consent_update` (pushed by this plugin on every page load and by the banner after a choice) |
+| `Consent State - *` | Variables | Read each consent type (`ad_storage`, `analytics_storage`, …) via the *GTM Consent State* community template |
+| `Google Analytics \| GA4 \| Measurement ID` | Variable (Constant) | **Set this to your `G-XXXXXXXXXX` measurement ID after import** |
+| `Consent Mode - privacy policy` | Variable (Constant) | Placeholder privacy-policy URL — point it at your own |
+
+The plugin and this container are co-designed: the plugin sets the consent **defaults** and emits `gtm_consent_update`, which is the only trigger that fires GA4. The banner provides the UI and issues consent **updates**. The starter container is generic (no account, container or property IDs); GTM assigns fresh IDs on import.
+
 ---
 
 ## Development
