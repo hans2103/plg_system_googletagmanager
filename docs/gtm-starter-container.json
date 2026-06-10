@@ -1,0 +1,379 @@
+{
+    "exportFormatVersion": 2,
+    "exportTime": "2026-01-01 00:00:00",
+    "containerVersion": {
+        "path": "accounts/0/containers/0/versions/0",
+        "accountId": "0",
+        "containerId": "0",
+        "containerVersionId": "0",
+        "container": {
+            "path": "accounts/0/containers/0",
+            "accountId": "0",
+            "containerId": "0",
+            "name": "Consent Mode + Cookie Wall (starter)",
+            "publicId": "GTM-XXXXXXX",
+            "usageContext": [
+                "WEB"
+            ],
+            "features": {
+                "supportUserPermissions": true,
+                "supportEnvironments": true,
+                "supportWorkspaces": true,
+                "supportGtagConfigs": false,
+                "supportBuiltInVariables": true,
+                "supportClients": false,
+                "supportFolders": true,
+                "supportTags": true,
+                "supportTemplates": true,
+                "supportTriggers": true,
+                "supportVariables": true,
+                "supportVersions": true,
+                "supportZones": true,
+                "supportTransformations": false
+            },
+            "tagIds": [
+                "GTM-XXXXXXX"
+            ]
+        },
+        "tag": [
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "tagId": "6",
+                "name": "00.01 - Google Tag | GA4",
+                "type": "googtag",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "tagId",
+                        "value": "{{Google Analytics | GA4 | Measurement ID}}"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "configSettingsVariable",
+                        "value": "{{Google Tag - Configuration Settings}}"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "eventSettingsVariable",
+                        "value": "{{Google Tag - Event Settings}}"
+                    }
+                ],
+                "firingTriggerId": [
+                    "9"
+                ],
+                "tagFiringOption": "ONCE_PER_EVENT",
+                "monitoringMetadata": {
+                    "type": "MAP"
+                },
+                "consentSettings": {
+                    "consentStatus": "NOT_NEEDED"
+                }
+            },
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "tagId": "8",
+                "name": "98.00 - Consent Mode | Cookie Wall",
+                "type": "html",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "html",
+                        "value": "<div id=\"cc-status\" role=\"status\" aria-live=\"polite\" class=\"cc-sr-only\"></div>\n<button type=\"button\" id=\"cc-modal--button\" class=\"cc-modal__button--settings\" aria-label=\"Cookie settings\" aria-haspopup=\"dialog\" aria-controls=\"cc-accept\">\n    <span data-i18n=\"settings.ariaLabel\">Cookie-instellingen</span>\n</button>\n<dialog id=\"cc-accept\" class=\"cc-modal\" aria-labelledby=\"cc-accept-title\" aria-describedby=\"cc-accept-description\">\n    <div class=\"cc-modal__content\">\n        <div class=\"cc-modal__header\">\n            <h2 id=\"cc-accept-title\" data-i18n=\"header.title\">Deze website maakt gebruik van cookies</h2>\n            <div class=\"cc-modal__lang-toggle\" role=\"group\" aria-label=\"Taal / Language\">\n                <button type=\"button\" class=\"cc-modal__lang-btn active\" data-lang=\"nl\" aria-pressed=\"true\">Nederlands</button>\n                <button type=\"button\" class=\"cc-modal__lang-btn\" data-lang=\"en\" aria-pressed=\"false\">English</button>\n            </div>\n        </div>\n        <nav class=\"cc-modal__tabs\" aria-label=\"Cookie-informatie secties\">\n            <ul role=\"tablist\">\n                <li role=\"presentation\">\n                    <button id=\"cc-tab-toestemming\" class=\"cc-modal__tab\" role=\"tab\" aria-selected=\"true\" aria-controls=\"cc-panel-toestemming\" tabindex=\"0\" data-i18n=\"tab.toestemming\">Toestemming</button>\n                </li>\n                <li role=\"presentation\">\n                    <button id=\"cc-tab-details\" class=\"cc-modal__tab\" role=\"tab\" aria-selected=\"false\" aria-controls=\"cc-panel-details\" tabindex=\"-1\" data-i18n=\"tab.details\">Details</button>\n                </li>\n                <li role=\"presentation\">\n                    <button id=\"cc-tab-over\" class=\"cc-modal__tab\" role=\"tab\" aria-selected=\"false\" aria-controls=\"cc-panel-over\" tabindex=\"-1\" data-i18n=\"tab.over\">Over cookies</button>\n                </li>\n            </ul>\n        </nav>\n        <div class=\"cc-modal__body\">\n            <div id=\"cc-panel-toestemming\" role=\"tabpanel\" aria-labelledby=\"cc-tab-toestemming\">\n                <div>\n                    <p id=\"cc-accept-description\" data-i18n=\"body.intro\">Deze website maakt gebruik van cookies om de functionaliteit en effectiviteit te verbeteren.</p>\n                </div>\n                <fieldset class=\"cc-modal__checkboxes\">\n                    <legend class=\"cc-sr-only\" data-i18n=\"settings.legend\">Kies uw cookie-voorkeuren</legend>\n                    <label><input id=\"consent-necessary\" type=\"checkbox\" checked disabled><span data-i18n=\"settings.necessary.label\">Noodzakelijk</span></label>\n                    <label><input id=\"consent-preferences\" type=\"checkbox\"><span data-i18n=\"settings.preferences.label\">Voorkeuren</span></label>\n                    <label><input id=\"consent-analytics\" type=\"checkbox\"><span data-i18n=\"settings.analytics.label\">Statistieken</span></label>\n                    <label><input id=\"consent-marketing\" type=\"checkbox\"><span data-i18n=\"settings.marketing.label\">Marketing</span></label>\n                </fieldset>\n                <p><small data-i18n=\"body.withdraw\">Je kunt je toestemming op elk moment wijzigen of intrekken.</small></p>\n            </div>\n            <div id=\"cc-panel-details\" role=\"tabpanel\" aria-labelledby=\"cc-tab-details\" hidden>\n                <h3 data-i18n=\"settings.necessary.title\">Noodzakelijk</h3>\n                <p data-i18n=\"settings.necessary.description\">Noodzakelijke cookies helpen een website bruikbaarder te maken, door basisfuncties als paginanavigatie en toegang tot beveiligde gedeelten van de website mogelijk te maken. Zonder deze cookies kan de website niet naar behoren werken.</p>\n                <hr>\n                <h3 data-i18n=\"settings.preferences.title\">Persoonlijke instellingen</h3>\n                <p data-i18n=\"settings.preferences.description\">Voorkeurscookies zorgen ervoor dat een website informatie kan onthouden die van invloed is op het gedrag en de vormgeving van de website, zoals de taal van je voorkeur of de regio waar je woont.</p>\n                <hr>\n                <h3 data-i18n=\"settings.analytics.title\">Statistieken</h3>\n                <p data-i18n=\"settings.analytics.description\">Statistische cookies helpen eigenaren van websites begrijpen hoe bezoekers hun website gebruiken, door anoniem gegevens te verzamelen en te rapporteren.</p>\n                <hr>\n                <h3 data-i18n=\"settings.marketing.title\">Marketing</h3>\n                <p data-i18n=\"settings.marketing.description\">Marketingcookies worden gebruikt om bezoekers te volgen wanneer ze verschillende websites bezoeken. Hun doel is advertenties weergeven die zijn toegesneden op en relevant zijn voor de individuele gebruiker. Deze advertenties worden zo waardevoller voor uitgevers en externe adverteerders.</p>\n            </div>\n            <div id=\"cc-panel-over\" role=\"tabpanel\" aria-labelledby=\"cc-tab-over\" hidden>\n                <h3 data-i18n=\"body.details.summary\">Wat zijn cookies?</h3>\n                <p data-i18n=\"body.details.p1\">Cookies zijn kleine tekstbestanden die door websites kunnen worden gebruikt om gebruikerservaringen efficiënter te maken.</p>\n                <p data-i18n=\"body.details.p2\">Volgens de wet mogen wij cookies op jouw apparaat opslaan als ze strikt noodzakelijk zijn voor het gebruik van de site. Voor alle andere soorten cookies hebben we je toestemming nodig.</p>\n                <p data-i18n=\"body.details.p3\">Deze website maakt gebruik van verschillende soorten cookies. Sommige cookies worden geplaatst door diensten van derden die op onze pagina's worden weergegeven.</p>\n                <p data-i18n=\"body.details.p4\">Je kunt je toestemming op elk moment wijzigen of intrekken.</p>\n            </div>\n        </div>\n        <div class=\"cc-modal__footer\">\n            <button id=\"cc-reject-all\" class=\"cc-modal__button cc-modal__button--active\" data-i18n=\"footer.reject\">Weiger</button>\n            <button id=\"cc-accept-selection\" class=\"cc-modal__button cc-modal__button--active\" data-i18n=\"footer.save\">Keuze opslaan</button>\n            <button id=\"cc-accept-all\" class=\"cc-modal__button cc-modal__button--active\" data-i18n=\"footer.accept\">Alles accepteren</button>\n        </div>\n    </div>\n</dialog>\n\n<style>\n    :root {\n        --cc-modal-color: oklch(62% 0.22 255deg);\n        --cc-color-bg: oklch(98% 0 0);\n        --cc-color-bg-btn: oklch(100% 0 0);\n        --cc-color-border: oklch(87% 0 0);\n        --cc-color-bg-hover: oklch(from var(--cc-modal-color) 97% c h);\n        --cc-color-text: oklch(15% 0 0);\n        --cc-color-text-muted: oklch(44% 0 0);\n        --cc-color-border-modal: oklch(0% 0 0 / .2);\n        --cc-color-text-on-accent: oklch(100% 0 0);\n        --cc-color-btn-active-hover: oklch(from var(--cc-modal-color) calc(l - 0.08) c h);\n        --cc-color-shadow: oklch(28% 0 0);\n        color-scheme: light;\n    }\n\n    @media (prefers-color-scheme: dark) {\n        :root {\n            --cc-color-bg: oklch(18% 0 0);\n            --cc-color-bg-btn: oklch(22% 0 0);\n            --cc-color-border: oklch(32% 0 0);\n            --cc-color-bg-hover: oklch(25% 0.07 92);\n            --cc-color-text: oklch(92% 0 0);\n            --cc-color-text-muted: oklch(62% 0 0);\n            --cc-color-border-modal: oklch(100% 0 0 / .12);\n            --cc-color-shadow: oklch(10% 0 0);\n            color-scheme: dark;\n        }\n    }\n\n    .cc-sr-only {\n        position: absolute;\n        width: 1px;\n        height: 1px;\n        padding: 0;\n        margin: -1px;\n        overflow: hidden;\n        clip: rect(0, 0, 0, 0);\n        white-space: nowrap;\n        border: 0;\n    }\n\n    @keyframes cc-dialog-in {\n        from {\n            opacity: 0;\n            transform: translateY(1rem) scale(.98);\n        }\n        to {\n            opacity: 1;\n            transform: none;\n        }\n    }\n\n    .cc-modal {\n        max-inline-size: 42em;\n        max-block-size: 90vh;\n        padding: 0;\n        border: none;\n        outline: 0;\n        font-size: 16px;\n        line-height: 1.5555555556;\n        font-weight: 400;\n        letter-spacing: normal;\n        font-family: system-ui, sans-serif;\n        overflow-y: auto;\n        color: var(--cc-color-text);\n        background-color: var(--cc-color-bg);\n    }\n\n    .cc-modal[open] {\n        animation: cc-dialog-in .25s ease-out;\n    }\n\n    .cc-modal::backdrop {\n        background-color: oklch(10% 0 0 / .75);\n    }\n\n    .cc-modal h2 {\n        font-size: 2em;\n    }\n\n    .cc-modal h3 {\n        margin-block: 0 .25em;\n    }\n\n    .cc-modal__content {\n        position: relative;\n        display: flex;\n        flex-direction: column;\n        inline-size: 100%;\n        pointer-events: auto;\n        background-color: var(--cc-color-bg);\n        background-clip: padding-box;\n        border: 1px solid var(--cc-color-border-modal);\n        border-radius: 0.3em;\n        outline: 0;\n    }\n\n    .cc-modal__content > * {\n        padding: 1em;\n    }\n\n    .cc-modal__content > * > * {\n        margin-block: unset;\n    }\n\n    .cc-modal__header {\n        border-bottom: 1px solid var(--cc-color-border);\n    }\n\n    .cc-modal__lang-toggle {\n        display: flex;\n        gap: 0.25em;\n        margin-top: 1em;\n        padding-top: 0.75em;\n        border-top: 1px solid var(--cc-color-border);\n    }\n\n    .cc-modal__lang-btn {\n        padding: 0.5em 1em;\n        border: 1px solid var(--cc-color-border);\n        background: var(--cc-color-bg-btn);\n        color: var(--cc-color-text-muted);\n        border-radius: 0.25em;\n        cursor: pointer;\n        font-size: 0.875em;\n        font-weight: 500;\n        transition: all 0.2s;\n    }\n\n    .cc-modal__lang-btn:hover {\n        background: var(--cc-color-bg-hover);\n        border-color: var(--cc-modal-color);\n    }\n\n    .cc-modal__lang-btn.active {\n        background: var(--cc-modal-color);\n        border-color: var(--cc-modal-color);\n        color: oklch(100% 0 0);\n    }\n\n    .cc-modal__tabs {\n        padding-block: 0;\n        border-bottom: 1px solid var(--cc-color-border);\n    }\n\n    .cc-modal__tabs ul {\n        list-style: none;\n        margin: 0;\n        padding: 0;\n        display: flex;\n    }\n\n    .cc-modal__tabs li {\n        margin: 0;\n    }\n\n    .cc-modal__tab {\n        background: transparent;\n        border: none;\n        border-bottom: 2px solid transparent;\n        padding: .75em 1em;\n        cursor: pointer;\n        color: var(--cc-color-text-muted);\n        font-size: .875em;\n        font-weight: 500;\n        transition: color .2s, border-color .2s;\n        white-space: nowrap;\n    }\n\n    .cc-modal__tab[aria-selected=\"true\"] {\n        color: var(--cc-modal-color);\n        border-bottom-color: var(--cc-modal-color);\n    }\n\n    .cc-modal__tab:hover {\n        color: var(--cc-modal-color);\n        background: var(--cc-color-bg-hover);\n        border-bottom-color: oklch(from var(--cc-modal-color) l c h / .35);\n    }\n\n    .cc-modal__body {\n        overflow-y: auto;\n    }\n\n    .cc-modal__body > * + * {\n        margin-top: .5em;\n    }\n\n    @media (max-width: 33rem) {\n        .cc-modal__body img {\n            display: none;\n        }\n    }\n\n    .cc-modal__footer {\n        display: flex;\n        align-items: stretch;\n        gap: .5em;\n        border-top: 1px solid var(--cc-color-border);\n    }\n\n    .cc-modal__button {\n        flex: 1;\n        color: var(--cc-modal-color);\n        background-color: var(--cc-color-bg-btn);\n        border: 1px solid var(--cc-color-border);\n        border-radius: .25em;\n        padding: 1em;\n        cursor: pointer;\n        transition: background-color .2s, box-shadow .2s, color .2s;\n    }\n\n    .cc-modal__button:hover,\n    .cc-modal__button:focus {\n        background-color: var(--cc-color-bg-hover);\n        border-color: var(--cc-modal-color);\n        color: var(--cc-modal-color);\n    }\n\n    .cc-modal__button--active {\n        color: var(--cc-color-text-on-accent);\n        background-color: var(--cc-modal-color);\n        border-color: var(--cc-modal-color);\n    }\n\n    .cc-modal__button--active:hover,\n    .cc-modal__button--active:focus {\n        box-shadow: 0 1px 2px 0 oklch(from var(--cc-color-shadow) l c h / .3), 0 1px 3px 1px oklch(from var(--cc-color-shadow) l c h / .15);\n        background-color: var(--cc-color-btn-active-hover);\n        color: var(--cc-color-text-on-accent);\n    }\n\n    .cc-modal__button--settings {\n        position: fixed;\n        z-index: 9999;\n        padding: .25em;\n        display: flex;\n        justify-content: center;\n        align-items: center;\n        gap: 0;\n        inset-block-end: .5em;\n        inset-inline-start: .5em;\n        font-size: 1.5rem;\n        border: none;\n        background: var(--cc-modal-color);\n        color: oklch(100% 0 0);\n        border-radius: 1.5em;\n        cursor: pointer;\n        overflow: hidden;\n        inline-size: fit-content;\n        transition: gap .2s ease;\n    }\n\n    .cc-modal__button--settings:hover {\n        gap: .5rem;\n    }\n\n    @media (hover: none) {\n        .cc-modal__button--settings {\n            gap: .5rem;\n        }\n\n        .cc-modal__button--settings > span {\n            inline-size: fit-content;\n            transform: translateX(0);\n            opacity: 1;\n        }\n    }\n\n    .cc-modal__button--settings > span {\n        display: inline-block;\n        inline-size: 0;\n        overflow: hidden;\n        white-space: nowrap;\n        font-size: .75em;\n        transition: inline-size 0.3s ease, opacity 0.3s ease, transform 500ms ease-in-out;\n        transform: translateX(-2rem);\n        transform-origin: center left;\n        opacity: 0;\n    }\n\n    .cc-modal__button--settings:hover > span {\n        inline-size: fit-content;\n        transform: translateX(0);\n        opacity: 1;\n    }\n\n    .cc-modal__button--settings svg {\n        inline-size: 1em;\n        block-size: 1em;\n        fill: currentcolor;\n        flex-shrink: 0;\n    }\n\n    .cc-modal__checkboxes {\n        border: none;\n        padding: 0;\n        margin: 0;\n        display: flex;\n        flex-direction: column;\n        flex-wrap: wrap;\n        gap: .5em;\n    }\n\n    @media screen and (min-width: 35em) {\n        .cc-modal__checkboxes {\n            flex-direction: row;\n        }\n    }\n\n    .cc-modal__checkboxes label {\n        display: flex;\n        align-items: center;\n        flex: 1 1 auto;\n        padding: .5em .75em;\n        border: 1px solid var(--cc-color-border);\n        border-radius: .25em;\n        white-space: nowrap;\n        cursor: pointer;\n    }\n\n    @media screen and (min-width: 35em) {\n        .cc-modal__checkboxes label {\n            flex-direction: column-reverse;\n        }\n    }\n\n    .cc-modal__checkboxes label:has(input:disabled) {\n        opacity: .6;\n        cursor: default;\n    }\n\n    .cc-modal [type=checkbox],\n    .cc-modal [type=radio] {\n        inline-size: 1rem;\n        block-size: 1rem;\n        margin: 0;\n        flex-shrink: 0;\n        accent-color: var(--cc-modal-color);\n    }\n\n    .cc-modal__checkboxes [type=checkbox] {\n        margin-inline-end: .5rem;\n    }\n\n    @media screen and (min-width: 35em) {\n        .cc-modal__checkboxes [type=checkbox] {\n            margin-inline-end: 0;\n        }\n    }\n\n    /* Focus visible styles for accessibility */\n    .cc-modal button:focus-visible,\n    .cc-modal [type=checkbox]:focus-visible {\n        outline: 2px solid var(--cc-modal-color);\n        outline-offset: 2px;\n    }\n</style>\n\n<script>\n    (function () {\n        'use strict';\n\n        /**\n         * Consent lifetime in milliseconds (180 days)\n         * @type {number}\n         */\n        var consentLifetime = 15552000000;\n\n        /**\n         * Translations for cookie consent modal\n         * @type {Object}\n         */\n        var translations = {\n            nl: {\n                'header.title': 'Deze website maakt gebruik van cookies',\n                'body.intro': 'Deze website maakt gebruik van cookies om de functionaliteit en effectiviteit te verbeteren. Sommige cookies worden geplaatst door diensten van derden. Door op \\'Accepteren\\' te klikken ga je akkoordmet hetgebruik vancookies zoalsomschreven in onzeprivacyverklaring. Jekunt jeeigen voorkeurenaanpassen viade vakjeshieronder.',\n                'body.withdraw': 'Je kunt je toestemming op elk moment wijzigen of intrekken via de cookie-instellingen knop linksonder.',\n                'body.details.summary': 'Wat zijn cookies?',\n                'body.details.p1': 'Cookies zijn kleine tekstbestanden die door websites kunnen worden gebruikt om gebruikerservaringen efficiënter te maken.',\n                'body.details.p2': 'Volgens de wet mogen wij cookies op jouw apparaat opslaan als ze strikt noodzakelijk zijn voor het gebruik van de site. Voor alle andere soorten cookies hebben we je toestemming nodig.',\n                'body.details.p3': 'Deze website maakt gebruik van verschillende soorten cookies. Sommige cookies worden geplaatst door diensten van derden die op onze pagina\\'s worden weergegeven.',\n                'body.details.p4': 'Je kunt je toestemming op elk moment wijzigen of intrekken.',\n                'tab.toestemming': 'Toestemming',\n                'tab.details': 'Details',\n                'tab.over': 'Over cookies',\n                'footer.reject': 'Weiger',\n                'footer.save': 'Keuze opslaan',\n                'footer.accept': 'Alles accepteren',\n                'settings.ariaLabel': 'Cookie-instellingen',\n                'settings.legend': 'Kies uw cookie-voorkeuren',\n                'settings.title': 'Cookie instellingen',\n                'settings.subtitle': 'Welke cookies mogen we plaatsen?',\n                'settings.necessary.title': 'Noodzakelijk',\n                'settings.necessary.description': 'Noodzakelijke cookies helpen een website bruikbaarder te maken, door basisfuncties als paginanavigatie en toegang tot beveiligde gedeelten van de website mogelijk te maken. Zonderdeze cookieskan dewebsite nietnaar behorenwerken.',\n                'settings.necessary.label': 'Noodzakelijk',\n                'settings.preferences.title': 'Persoonlijke instellingen',\n                'settings.preferences.description': 'Voorkeurscookies zorgen ervoor dat een website informatie kan onthouden die van invloed is op het gedrag en de vormgeving van de website, zoals de taal van je voorkeur of de regiowaar jewoont.',\n                'settings.preferences.label': 'Voorkeuren',\n                'settings.analytics.title': 'Statistieken',\n                'settings.analytics.description': 'Statistische cookies helpen eigenaren van websites begrijpen hoe bezoekers hun website gebruiken, door anoniem gegevens te verzamelen en te rapporteren.',\n                'settings.analytics.label': 'Statistieken',\n                'settings.marketing.title': 'Marketing',\n                'settings.marketing.description': 'Marketingcookies worden gebruikt om bezoekers te volgen wanneer ze verschillende websites bezoeken. Hun doel is advertenties weergeven die zijn toegesneden op en relevant zijn voorde individuelegebruiker. Dezeadvertenties wordenzo waardevollervoor uitgeversen externeadverteerders.',\n                'settings.marketing.label': 'Marketing',\n                'status.accepted': 'Alle cookies geaccepteerd',\n                'status.rejected': 'Alleen noodzakelijke cookies geaccepteerd',\n                'status.saved': 'Cookie-instellingen opgeslagen'\n            },\n            en: {\n                'header.title': 'This website uses cookies',\n                'body.intro': 'We use cookies to improve the functionality and effectiveness of this website. Some cookies are placed by third-party services. By clicking \\'Accept all\\' you agree to the use of cookies as described in ourprivacy statement.Youcan adjustyour preferencesusing thecheckboxes below.',\n                'body.withdraw': 'You can change or withdraw your consent at any time using the cookie settings button in the bottom left corner.',\n                'body.details.summary': 'What are cookies?',\n                'body.details.p1': 'Cookies are small text files that websites can use to make user experiences more efficient.',\n                'body.details.p2': 'By law, we may store cookies on your device if they are strictly necessary for the operation of this site. For all other types of cookies we need your permission.',\n                'body.details.p3': 'This website uses different types of cookies. Some cookies are placed by third-party services that appear on our pages.',\n                'body.details.p4': 'You can change or withdraw your consent at any time.',\n                'tab.toestemming': 'Consent',\n                'tab.details': 'Details',\n                'tab.over': 'About cookies',\n                'footer.reject': 'Reject all',\n                'footer.save': 'Save selection',\n                'footer.accept': 'Accept all',\n                'settings.ariaLabel': 'Cookie settings',\n                'settings.legend': 'Choose your cookie preferences',\n                'settings.title': 'Cookie settings',\n                'settings.subtitle': 'Which cookies may we place?',\n                'settings.necessary.title': 'Necessary',\n                'settings.necessary.description': 'Necessary cookies help make a website usable by enabling basic functions like page navigation and access to secure areas of the website. The website cannot function properly withoutthese cookies.',\n                'settings.necessary.label': 'Necessary',\n                'settings.preferences.title': 'Preferences',\n                'settings.preferences.description': 'Preference cookies enable a website to remember information that changes the way the website behaves or looks, like your preferred language or the region that you are in.',\n                'settings.preferences.label': 'Preferences',\n                'settings.analytics.title': 'Statistics',\n                'settings.analytics.description': 'Statistic cookies help website owners to understand how visitors interact with websites by collecting and reporting information anonymously.',\n                'settings.analytics.label': 'Statistics',\n                'settings.marketing.title': 'Marketing',\n                'settings.marketing.description': 'Marketing cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the individual user and thereby more valuable forpublishers and third party advertisers.',\n                'settings.marketing.label': 'Marketing',\n                'status.accepted': 'All cookies accepted',\n                'status.rejected': 'Only necessary cookies accepted',\n                'status.saved': 'Cookie settings saved'\n            }\n        };\n\n        /**\n         * Detects the preferred language from localStorage (user override) or\n         * the page's html[lang] attribute (e.g. \"nl_NL\", \"nl-NL\" -> 'nl', \"en_GB\", \"en-GB\" -> 'en').\n         * Falls back to 'nl' when no match is found.\n         * @returns {string}\n         */\n        function detectLang() {\n            var stored = localStorage.getItem('ccLang');\n            if (stored === 'nl' || stored === 'en') return stored;\n            var primary = (document.documentElement.lang || '').toLowerCase().replace('_', '-').split('-')[0];\n            if (primary === 'en') return 'en';\n            return 'nl';\n        }\n\n        /**\n         * Current active language\n         * @type {string}\n         */\n        var currentLang = detectLang();\n\n        /**\n         * Announces a status message to screen readers via the live region\n         * @param {string} message - Message to announce\n         * @returns {void}\n         */\n        function announceStatus(message) {\n            var el = document.getElementById('cc-status');\n            if (!el) return;\n            el.textContent = '';\n            setTimeout(function () {\n                el.textContent = message;\n            }, 100);\n        }\n\n        /**\n         * Switches the visible tab panel\n         * @param {string} tabId - The ID of the tab button to activate\n         * @returns {void}\n         */\n        function switchTab(tabId) {\n            var tabs = document.querySelectorAll('.cc-modal__tab');\n            for (var i = 0; i < tabs.length; i++) {\n                var selected = tabs[i].id === tabId;\n                tabs[i].setAttribute('aria-selected', selected ? 'true' : 'false');\n                tabs[i].tabIndex = selected ? 0 : -1;\n            }\n            var panels = document.querySelectorAll('[role=\"tabpanel\"]');\n            for (var j = 0; j < panels.length; j++) {\n                if (panels[j].getAttribute('aria-labelledby') === tabId) {\n                    panels[j].removeAttribute('hidden');\n                } else {\n                    panels[j].setAttribute('hidden', '');\n                }\n            }\n        }\n\n        /**\n         * Opens the cookie consent modal and restores saved preferences if they exist.\n         * Native <dialog> + showModal() already provides a focus trap; we only\n         * move the initial focus to the active tab for screenreader users.\n         * @returns {void}\n         */\n        function openCCModal() {\n            var modal = document.getElementById('cc-accept');\n            if (localStorage.getItem('consentMode') !== null) {\n                restoreFromLocalStorage();\n            }\n            modal.showModal();\n            setTimeout(function () {\n                var activeTab = modal.querySelector('.cc-modal__tab[aria-selected=\"true\"]');\n                if (activeTab) {\n                    activeTab.focus();\n                }\n            }, 0);\n        }\n\n        /**\n         * Closes the cookie consent modal and returns focus to the settings button\n         * @returns {void}\n         */\n        function closeCCModal() {\n            var modal = document.getElementById('cc-accept');\n            if (modal) {\n                modal.close();\n            }\n            var btn = document.getElementById('cc-modal--button');\n            if (btn) {\n                btn.focus();\n            }\n        }\n\n        window.dataLayer = window.dataLayer || [];\n\n        /**\n         * Google Tag Manager gtag function for pushing data to dataLayer\n         * @returns {void}\n         */\n        function gtag() {\n            dataLayer.push(arguments);\n        }\n\n        /**\n         * Creates and inserts a cookie SVG icon into the specified node\n         * @param {HTMLElement} node - The DOM element to insert the icon into\n         * @returns {SVGElement} The inserted SVG element\n         */\n        function cookieIcon(node) {\n            var iconSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');\n            var iconPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');\n\n            iconSvg.setAttribute('width', '24');\n            iconSvg.setAttribute('height', '24');\n            iconSvg.setAttribute('viewBox', '0 0 24 24');\n            iconSvg.setAttribute('aria-hidden', 'true');\n            iconSvg.setAttribute('focusable', 'false');\n\n            iconPath.setAttribute(\n                'd',\n                'M12.076.581a.62.62 0 0 0-.515-.53 5.298 5.298 0 0 0-3.22.57l-3.7 1.975a5.302 5.302 0 0 0-2.27 2.355L.536 8.731a5.305 5.305 0 0 0-.4553.245l.725 4.14a5.308 5.308 0 0 0 1.535 2.895l3.015 2.92c.805.78 1.83 1.28 2.935 1.435l4.15.585a5.298 5.298 0 0 0 3.22-.57l3.7-1.975a5.288 5.288 0 0 02.27-2.36l1.835-3.775c.49-1.005.65-2.145.455-3.245a.627.627 0 0 0-.53-.505 6.414 6.414 0 0 1-5.225-4.87.962.962 0 0 0-.785-.73 6.41 6.41 0 01-5.31-5.34h.005Zm-2.475 5.82c.878 0 1.6.722 1.6 1.6 0 .878-.722 1.6-1.6 1.6-.878 0-1.6-.722-1.6-1.6 0-.878.722-1.6 1.6-1.6Zm-3.2 9.6c0-.878.722-1.61.6-1.6.878 0 1.6.722 1.6 1.6 0 .878-.722 1.6-1.6 1.6-.878 0-1.6-.722-1.6-1.6Zm11.2-3.2c.878 0 1.6.722 1.6 1.6 0 .878-.722 1.6-1.6 1.6-.8780-1.6-.722-1.6-1.6 0-.878.722-1.6 1.6-1.6Z'\n            );\n\n            iconSvg.appendChild(iconPath);\n\n            return node.insertBefore(iconSvg, node.firstChild);\n        }\n\n        /**\n         * Switches the language of the cookie consent modal\n         * @param {string} lang - The language code ('nl' or 'en')\n         * @returns {void}\n         */\n        function switchLanguage(lang) {\n            currentLang = lang;\n\n            var elements = document.querySelectorAll('[data-i18n]');\n            for (var i = 0; i < elements.length; i++) {\n                var key = elements[i].getAttribute('data-i18n');\n                if (translations[lang] && translations[lang][key]) {\n                    elements[i].textContent = translations[lang][key];\n                }\n            }\n\n            var settingsBtn = document.getElementById('cc-modal--button');\n            if (settingsBtn && translations[lang]['settings.ariaLabel']) {\n                settingsBtn.setAttribute('aria-label', translations[lang]['settings.ariaLabel']);\n            }\n\n            var modal = document.getElementById('cc-accept');\n            if (modal) {\n                modal.setAttribute('aria-label', translations[lang]['settings.title'] || 'Cookie settings');\n            }\n\n            var langButtons = document.querySelectorAll('.cc-modal__lang-btn');\n            for (var j = 0; j < langButtons.length; j++) {\n                var btnLang = langButtons[j].getAttribute('data-lang');\n                if (btnLang === lang) {\n                    langButtons[j].classList.add('active');\n                    langButtons[j].setAttribute('aria-pressed', 'true');\n                } else {\n                    langButtons[j].classList.remove('active');\n                    langButtons[j].setAttribute('aria-pressed', 'false');\n                }\n            }\n        }\n\n        /**\n         * Checks if the user's consent has expired based on stored expiration timestamp\n         * @returns {boolean} True if consent has expired or doesn't exist, false if still valid\n         */\n        function isConsentExpired() {\n            var stored = localStorage.getItem('consentMode');\n            if (!stored) return true;\n\n            try {\n                var consentData = JSON.parse(stored);\n                if (consentData.expiration) {\n                    return new Date().getTime() > consentData.expiration;\n                }\n                return false;\n            } catch (e) {\n                return true;\n            }\n        }\n\n        /**\n         * Accepts all cookies and closes the modal\n         * @returns {void}\n         */\n        function acceptAllCookies() {\n            setConsent(\n                {\n                    adStorage: true,\n                    analyticsStorage: true,\n                    personalizationStorage: true,\n                    functionalityStorage: true,\n                    securityStorage: true,\n                    adUserData: true,\n                    adPersonalization: true\n                }\n            );\n            closeCCModal();\n            announceStatus(translations[currentLang]['status.accepted']);\n        }\n\n        /**\n         * Accepts only the user's selected cookie preferences and closes the modal\n         * @returns {void}\n         */\n        function acceptSelectedCookies() {\n            setConsent(\n                {\n                    adStorage: document.getElementById('consent-marketing').checked,\n                    analyticsStorage: document.getElementById('consent-analytics').checked,\n                    personalizationStorage: document.getElementById('consent-preferences').checked,\n                    functionalityStorage: document.getElementById('consent-preferences').checked,\n                    securityStorage: true,\n                    adUserData: document.getElementById('consent-marketing').checked,\n                    adPersonalization: document.getElementById('consent-marketing').checked\n                }\n            );\n            closeCCModal();\n            announceStatus(translations[currentLang]['status.saved']);\n        }\n\n        /**\n         * Rejects all optional cookies, accepting only necessary security cookies\n         * @returns {void}\n         */\n        function acceptNoCookies() {\n            setConsent(\n                {\n                    adStorage: false,\n                    analyticsStorage: false,\n                    personalizationStorage: false,\n                    functionalityStorage: false,\n                    securityStorage: true,\n                    adUserData: false,\n                    adPersonalization: false\n                }\n            );\n            closeCCModal();\n            announceStatus(translations[currentLang]['status.rejected']);\n        }\n\n        /**\n         * Sets the user's cookie consent preferences in Google Tag Manager and localStorage\n         * @param {Object} consent - The consent object with boolean values for each category\n         * @returns {void}\n         */\n        function setConsent(consent) {\n            var consentMode = {\n                'ad_storage': consent.adStorage ? 'granted' : 'denied',\n                'analytics_storage': consent.analyticsStorage ? 'granted' : 'denied',\n                'personalization_storage': consent.personalizationStorage ? 'granted' : 'denied',\n                'functionality_storage': consent.functionalityStorage ? 'granted' : 'denied',\n                'security_storage': consent.securityStorage ? 'granted' : 'denied',\n                'ad_user_data': consent.adUserData ? 'granted' : 'denied',\n                'ad_personalization': consent.adPersonalization ? 'granted' : 'denied'\n            };\n\n            gtag('consent', 'update', consentMode);\n\n            var expirationTime = new Date().getTime() + consentLifetime;\n            var consentWithExpiration = {\n                consentMode: consentMode,\n                expiration: expirationTime\n            };\n\n            localStorage.setItem('consentMode', JSON.stringify(consentWithExpiration));\n            dataLayer.push({event: 'gtm_consent_update'});\n        }\n\n        /**\n         * Restores user's saved consent preferences from localStorage and updates the UI checkboxes\n         * @returns {void}\n         */\n        function restoreFromLocalStorage() {\n            var stored = localStorage.getItem('consentMode');\n            if (!stored) return;\n\n            try {\n                var consentData = JSON.parse(stored);\n                var consent = consentData.consentMode || consentData;\n\n                document.getElementById('consent-marketing').checked =\n                    consent.ad_storage === 'granted' ||\n                    consent.ad_user_data === 'granted' ||\n                    consent.ad_personalization === 'granted';\n\n                document.getElementById('consent-analytics').checked =\n                    consent.analytics_storage === 'granted';\n\n                document.getElementById('consent-preferences').checked =\n                    consent.personalization_storage === 'granted' ||\n                    consent.functionality_storage === 'granted';\n\n            } catch (e) {\n                console.error('Error restoring consent from localStorage:', e);\n            }\n        }\n\n        /**\n         * Initializes the cookie consent module\n         * @returns {void}\n         */\n        function init() {\n            var cookieButton = document.getElementById('cc-modal--button');\n            if (cookieButton) {\n                cookieIcon(cookieButton);\n            }\n\n            var modal = document.getElementById('cc-accept');\n            if (modal) {\n                modal.setAttribute('role', 'dialog');\n                modal.setAttribute('aria-modal', 'true');\n            }\n\n            switchLanguage(currentLang);\n\n            document.getElementById('cc-accept').addEventListener('cancel', function (e) {\n                e.preventDefault();\n            });\n\n            if (isConsentExpired()) {\n                openCCModal();\n            }\n\n            var langButtons = document.querySelectorAll('.cc-modal__lang-btn');\n            for (var i = 0; i < langButtons.length; i++) {\n                langButtons[i].addEventListener('click', function () {\n                    var chosen = this.getAttribute('data-lang');\n                    localStorage.setItem('ccLang', chosen);\n                    switchLanguage(chosen);\n                });\n            }\n\n            document.getElementById('cc-modal--button')\n                .addEventListener('click', function () {\n                    openCCModal();\n                });\n\n            var tabButtons = document.querySelectorAll('.cc-modal__tab');\n            for (var j = 0; j < tabButtons.length; j++) {\n                tabButtons[j].addEventListener('click', function () {\n                    switchTab(this.id);\n                    this.focus();\n                });\n            }\n\n            var tabList = document.querySelector('[role=\"tablist\"]');\n            if (tabList) {\n                tabList.addEventListener('keydown', function (e) {\n                    var tabs = Array.prototype.slice.call(\n                        document.querySelectorAll('.cc-modal__tab')\n                    );\n                    var idx = tabs.indexOf(document.activeElement);\n                    if (idx === -1) return;\n                    if (e.key === 'ArrowRight') {\n                        e.preventDefault();\n                        var next = tabs[(idx + 1) % tabs.length];\n                        switchTab(next.id);\n                        next.focus();\n                    } else if (e.key === 'ArrowLeft') {\n                        e.preventDefault();\n                        var prev = tabs[(idx - 1 + tabs.length) % tabs.length];\n                        switchTab(prev.id);\n                        prev.focus();\n                    }\n                });\n            }\n\n            document.getElementById('cc-accept-all')\n                .addEventListener('click', function () {\n                    acceptAllCookies();\n                });\n\n            document.getElementById('cc-accept-selection')\n                .addEventListener('click', function () {\n                    acceptSelectedCookies();\n                });\n\n            document.getElementById('cc-reject-all')\n                .addEventListener('click', function () {\n                    acceptNoCookies();\n                });\n        }\n\n        if (document.readyState === 'loading') {\n            document.addEventListener('DOMContentLoaded', init);\n        } else {\n            init();\n        }\n    })();\n</script>\n"
+                    },
+                    {
+                        "type": "BOOLEAN",
+                        "key": "supportDocumentWrite",
+                        "value": "false"
+                    }
+                ],
+                "firingTriggerId": [
+                    "2147479572"
+                ],
+                "tagFiringOption": "ONCE_PER_EVENT",
+                "monitoringMetadata": {
+                    "type": "MAP"
+                },
+                "consentSettings": {
+                    "consentStatus": "NOT_NEEDED"
+                }
+            }
+        ],
+        "trigger": [
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "triggerId": "9",
+                "name": "Event - GTM Consent Update",
+                "type": "CUSTOM_EVENT",
+                "customEventFilter": [
+                    {
+                        "type": "EQUALS",
+                        "parameter": [
+                            {
+                                "type": "TEMPLATE",
+                                "key": "arg0",
+                                "value": "{{_event}}"
+                            },
+                            {
+                                "type": "TEMPLATE",
+                                "key": "arg1",
+                                "value": "gtm_consent_update"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "variable": [
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "variableId": "3",
+                "name": "Google Analytics | GA4 | Measurement ID",
+                "type": "c",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "value",
+                        "value": "G-XXXXXXXXXX"
+                    }
+                ]
+            },
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "variableId": "4",
+                "name": "Google Tag - Configuration Settings",
+                "type": "gtcs"
+            },
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "variableId": "5",
+                "name": "Google Tag - Event Settings",
+                "type": "gtes"
+            },
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "variableId": "10",
+                "name": "Consent Mode - privacy policy",
+                "type": "c",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "value",
+                        "value": "https://www.example.com/privacy-policy"
+                    }
+                ],
+                "formatValue": {}
+            },
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "variableId": "12",
+                "name": "Consent State - Ad Personalization",
+                "type": "cvt_M6BW3",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "selectTarget",
+                        "value": "any"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "getType",
+                        "value": "ad_personalization"
+                    }
+                ],
+                "formatValue": {}
+            },
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "variableId": "13",
+                "name": "Consent State - Ad Storage",
+                "type": "cvt_M6BW3",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "selectTarget",
+                        "value": "any"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "getType",
+                        "value": "ad_storage"
+                    }
+                ],
+                "formatValue": {}
+            },
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "variableId": "14",
+                "name": "Consent State - Ad User Data",
+                "type": "cvt_M6BW3",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "selectTarget",
+                        "value": "any"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "getType",
+                        "value": "ad_user_data"
+                    }
+                ],
+                "formatValue": {}
+            },
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "variableId": "15",
+                "name": "Consent State - Analytics Storage",
+                "type": "cvt_M6BW3",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "selectTarget",
+                        "value": "any"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "getType",
+                        "value": "analytics_storage"
+                    }
+                ],
+                "formatValue": {}
+            },
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "variableId": "16",
+                "name": "Consent State - Functionality Storage",
+                "type": "cvt_M6BW3",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "selectTarget",
+                        "value": "any"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "getType",
+                        "value": "functionality_storage"
+                    }
+                ],
+                "formatValue": {}
+            },
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "variableId": "17",
+                "name": "Consent State - Personalization Storage",
+                "type": "cvt_M6BW3",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "selectTarget",
+                        "value": "any"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "getType",
+                        "value": "personalization_storage"
+                    }
+                ],
+                "formatValue": {}
+            },
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "variableId": "18",
+                "name": "Consent State - Security Storage",
+                "type": "cvt_M6BW3",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "selectTarget",
+                        "value": "any"
+                    },
+                    {
+                        "type": "TEMPLATE",
+                        "key": "getType",
+                        "value": "security_storage"
+                    }
+                ],
+                "formatValue": {}
+            },
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "variableId": "19",
+                "name": "JS Macro - Lifetime",
+                "type": "jsm",
+                "parameter": [
+                    {
+                        "type": "TEMPLATE",
+                        "key": "javascript",
+                        "value": "function() {\n    return 15552000000;\n}"
+                    }
+                ],
+                "formatValue": {}
+            }
+        ],
+        "builtInVariable": [
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "type": "PAGE_URL",
+                "name": "Page URL"
+            },
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "type": "PAGE_HOSTNAME",
+                "name": "Page Hostname"
+            },
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "type": "PAGE_PATH",
+                "name": "Page Path"
+            },
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "type": "REFERRER",
+                "name": "Referrer"
+            },
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "type": "EVENT",
+                "name": "Event"
+            }
+        ],
+        "customTemplate": [
+            {
+                "accountId": "0",
+                "containerId": "0",
+                "templateId": "11",
+                "name": "GTM Consent State",
+                "templateData": "___TERMS_OF_SERVICE___\n\nBy creating or modifying this file you agree to Google Tag Manager's Community\nTemplate Gallery Developer Terms of Service available at\nhttps://developers.google.com/tag-manager/gallery-tos (or such other URL as\nGoogle may provide), as modified from time to time.\n\n\n___INFO___\n\n{\n  \"type\": \"MACRO\",\n  \"id\": \"cvt_M6BW3\",\n  \"version\": 1,\n  \"displayName\": \"GTM Consent State\",\n  \"categories\": [\n    \"UTILITY\"\n  ],\n  \"description\": \"Get the status of each type of Consent Mode implemented in Google Tag Manager.\",\n  \"containerContexts\": [\n    \"WEB\"\n  ],\n  \"brand\": {\n    \"displayName\": \"Ayudante\",\n    \"id\": \"github.com_Ayudante\"\n  }\n}\n\n\n___TEMPLATE_PARAMETERS___\n\n[\n  {\n    \"type\": \"RADIO\",\n    \"name\": \"selectTarget\",\n    \"radioItems\": [\n      {\n        \"value\": \"all\",\n        \"displayValue\": \"All types\"\n      },\n      {\n        \"value\": \"any\",\n        \"displayValue\": \"Any type\"\n      }\n    ],\n    \"simpleValueType\": true,\n    \"defaultValue\": \"all\",\n    \"help\": \"Select the name of the Consent Type you want to retrieve.\\u003cbr\\u003e\\nIf you select \\\"\\u003cb\\u003eAll types\\u003c/b\\u003e\\\", you will get the status of the five types provided by default as an \\u003cb\\u003eobject\\u003c/b\\u003e.\\u003cbr\\u003e\\nif you select \\u003cb\\u003e\\\"Any type\\\"\\u003c/b\\u003e, you will get the value of the type as \\u003cb\\u003etrue/false\\u003c/b\\u003e.\",\n    \"displayName\": \"Get type\"\n  },\n  {\n    \"type\": \"SELECT\",\n    \"name\": \"getType\",\n    \"macrosInSelect\": false,\n    \"selectItems\": [\n      {\n        \"value\": \"ad_storage\",\n        \"displayValue\": \"ad_storage\"\n      },\n      {\n        \"value\": \"analytics_storage\",\n        \"displayValue\": \"analytics_storage\"\n      },\n      {\n        \"value\": \"functionality_storage\",\n        \"displayValue\": \"functionality_storage\"\n      },\n      {\n        \"value\": \"personalization_storage\",\n        \"displayValue\": \"personalization_storage\"\n      },\n      {\n        \"value\": \"security_storage\",\n        \"displayValue\": \"security_storage\"\n      },\n      {\n        \"value\": \"ad_user_data\",\n        \"displayValue\": \"ad_user_data\"\n      },\n      {\n        \"value\": \"ad_personalization\",\n        \"displayValue\": \"ad_personalization\"\n      },\n      {\n        \"value\": \"custom\",\n        \"displayValue\": \"\"\n      }\n    ],\n    \"simpleValueType\": true,\n    \"alwaysInSummary\": true,\n    \"help\": \"If you want to get a type that is not provided by default, select the blank box and enter the name of the type you want to get.\",\n    \"defaultValue\": \"ad_storage\",\n    \"enablingConditions\": [\n      {\n        \"paramName\": \"selectTarget\",\n        \"paramValue\": \"all\",\n        \"type\": \"NOT_EQUALS\"\n      }\n    ],\n    \"displayName\": \"Type name\"\n  },\n  {\n    \"type\": \"TEXT\",\n    \"name\": \"customName\",\n    \"displayName\": \"\",\n    \"simpleValueType\": true,\n    \"enablingConditions\": [\n      {\n        \"paramName\": \"getType\",\n        \"paramValue\": \"custom\",\n        \"type\": \"EQUALS\"\n      }\n    ],\n    \"valueValidators\": [\n      {\n        \"type\": \"NON_EMPTY\"\n      }\n    ],\n    \"notSetText\": \"[Required value.]\"\n  },\n  {\n    \"type\": \"LABEL\",\n    \"name\": \"customNote\",\n    \"displayName\": \"\\u003cb\\u003eNote\\u003c/b\\u003e: If you want to get a custom type, you need to add the name of the type you want to get to the \\u003cb\\u003epermissions\\u003c/b\\u003e of the variable template with read permissions.\\u003cbr\\u003e\\nIf the permission is not set, the value of this variable will be undefined.\",\n    \"enablingConditions\": [\n      {\n        \"paramName\": \"getType\",\n        \"paramValue\": \"custom\",\n        \"type\": \"EQUALS\"\n      }\n    ]\n  }\n]\n\n\n___SANDBOXED_JS_FOR_WEB_TEMPLATE___\n\n// -------- setup\n// ---- requires\nconst queryPermission = require('queryPermission');\t// check for permissions.\nconst isConsentGranted = require('isConsentGranted');\t// check for consent state.\nconst copyFromDataLayer = require('copyFromDataLayer');\t// check for gtm'event.\nconst Object = require('Object');\t// object's loop processing of object.\n\n// ---- default setting\nconst consentTypesNames = {\n\tdefaultConsentTypesNames: {\n\t\t'ad_storage': 'ad_storage',\n\t\t'analytics_storage': 'analytics_storage',\n\t\t'functionality_storage': 'functionality_storage',\n\t\t'personalization_storage': 'personalization_storage',\n\t\t'security_storage': 'security_storage',\n\t\t'ad_user_data': 'ad_user_data',\n\t\t'ad_personalization': 'ad_personalization'\n\t},\n\tcustomConsentTypeName: {\n\t\t'custom': data.customName\n\t}\n};\nconst nowEvent = copyFromDataLayer('event');\n\n// -------- getting\nif(nowEvent !== 'gtm.init_consent'){\n\t// ---- normal\n\tswitch (data.selectTarget) {\n\t\tcase 'all':\n\t\t\tconst defaultConsentTypesNames = Object.keys(consentTypesNames.defaultConsentTypesNames);\n\t\t\tconst canQueryAllDefaultConsentTypes = defaultConsentTypesNames.every((consentType) => {\n\t\t\t\treturn queryPermission('access_consent', consentType, 'read');\n\t\t\t});\n\t\t\tif (canQueryAllDefaultConsentTypes) {\n\t\t\t\treturn defaultConsentTypesNames.reduce((obj, consentType) => {\n\t\t\t\t\tobj[consentType] = isConsentGranted(consentType);\n\t\t\t\t\treturn obj;\n\t\t\t\t}, {});\n\t\t\t}\n\t\t\tbreak;\n\t\tdefault:\n\t\t\tconst specificConsentType = \n\t\t\t\tconsentTypesNames.defaultConsentTypesNames[data.getType] ||\n\t\t\t\tconsentTypesNames.customConsentTypeName[data.getType];\n\t\t\tconst canQuerySpecificConsentType = queryPermission('access_consent', specificConsentType, 'read');\n\t\t\tif (canQuerySpecificConsentType) {\n\t\t\t\treturn isConsentGranted(specificConsentType);\n\t\t\t}\n\t}\n}else{\n\t// ---- gtm.init_consent\n\treturn undefined;\n}\n\n// -------- error\nreturn false;\n\n\n___WEB_PERMISSIONS___\n\n[\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"access_consent\",\n        \"versionId\": \"1\"\n      },\n      \"param\": [\n        {\n          \"key\": \"consentTypes\",\n          \"value\": {\n            \"type\": 2,\n            \"listItem\": [\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"consentType\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"read\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"write\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"ad_storage\"\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": true\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": false\n                  }\n                ]\n              },\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"consentType\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"read\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"write\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"analytics_storage\"\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": true\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": false\n                  }\n                ]\n              },\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"consentType\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"read\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"write\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"functionality_storage\"\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": true\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": false\n                  }\n                ]\n              },\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"consentType\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"read\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"write\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"personalization_storage\"\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": true\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": false\n                  }\n                ]\n              },\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"consentType\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"read\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"write\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"security_storage\"\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": true\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": false\n                  }\n                ]\n              },\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"consentType\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"read\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"write\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"ad_personalization\"\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": true\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": false\n                  }\n                ]\n              },\n              {\n                \"type\": 3,\n                \"mapKey\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"consentType\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"read\"\n                  },\n                  {\n                    \"type\": 1,\n                    \"string\": \"write\"\n                  }\n                ],\n                \"mapValue\": [\n                  {\n                    \"type\": 1,\n                    \"string\": \"ad_user_data\"\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": true\n                  },\n                  {\n                    \"type\": 8,\n                    \"boolean\": false\n                  }\n                ]\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"clientAnnotations\": {\n      \"isEditedByUser\": true\n    },\n    \"isRequired\": true\n  },\n  {\n    \"instance\": {\n      \"key\": {\n        \"publicId\": \"read_data_layer\",\n        \"versionId\": \"1\"\n      },\n      \"param\": [\n        {\n          \"key\": \"allowedKeys\",\n          \"value\": {\n            \"type\": 1,\n            \"string\": \"specific\"\n          }\n        },\n        {\n          \"key\": \"keyPatterns\",\n          \"value\": {\n            \"type\": 2,\n            \"listItem\": [\n              {\n                \"type\": 1,\n                \"string\": \"event\"\n              }\n            ]\n          }\n        }\n      ]\n    },\n    \"clientAnnotations\": {\n      \"isEditedByUser\": true\n    },\n    \"isRequired\": true\n  }\n]\n\n\n___TESTS___\n\nscenarios:\n- name: all\n  code: |-\n    const mockData = {\n      // Mocked field values\n      selectTarget: 'all'\n    };\n\n    // Call runCode to run the template's code.\n    let variableResult = runCode(mockData);\n\n    // Verify that the variable returns a result.\n    assertThat(variableResult).isNotEqualTo(undefined);\n- name: ad_storage\n  code: |-\n    const mockData = {\n      // Mocked field values\n      selectTarget: 'any',\n      getType: 'ad_storage'\n    };\n\n    // Call runCode to run the template's code.\n    let variableResult = runCode(mockData);\n\n    // Verify that the variable returns a result.\n    assertThat(variableResult).isNotEqualTo(undefined);\n- name: analytics_storage\n  code: |-\n    const mockData = {\n      // Mocked field values\n      selectTarget: 'any',\n      getType: 'analytics_storage'\n    };\n\n    // Call runCode to run the template's code.\n    let variableResult = runCode(mockData);\n\n    // Verify that the variable returns a result.\n    assertThat(variableResult).isNotEqualTo(undefined);\n- name: functionality_storage\n  code: |-\n    const mockData = {\n      // Mocked field values\n      selectTarget: 'any',\n      getType: 'functionality_storage'\n    };\n\n    // Call runCode to run the template's code.\n    let variableResult = runCode(mockData);\n\n    // Verify that the variable returns a result.\n    assertThat(variableResult).isNotEqualTo(undefined);\n- name: personalization_storage\n  code: |-\n    const mockData = {\n      // Mocked field values\n      selectTarget: 'any',\n      getType: 'personalization_storage'\n    };\n\n    // Call runCode to run the template's code.\n    let variableResult = runCode(mockData);\n\n    // Verify that the variable returns a result.\n    assertThat(variableResult).isNotEqualTo(undefined);\n- name: security_storage\n  code: |-\n    const mockData = {\n      // Mocked field values\n      selectTarget: 'any',\n      getType: 'security_storage'\n    };\n\n    // Call runCode to run the template's code.\n    let variableResult = runCode(mockData);\n\n    // Verify that the variable returns a result.\n    assertThat(variableResult).isNotEqualTo(undefined);\n- name: ad_personalization\n  code: |-\n    const mockData = {\n      // Mocked field values\n      selectTarget: 'any',\n      getType: 'ad_personalization'\n    };\n\n    // Call runCode to run the template's code.\n    let variableResult = runCode(mockData);\n\n    // Verify that the variable returns a result.\n    assertThat(variableResult).isNotEqualTo(undefined);\n- name: ad_user_data\n  code: |-\n    const mockData = {\n      // Mocked field values\n      selectTarget: 'any',\n      getType: 'ad_user_data'\n    };\n\n    // Call runCode to run the template's code.\n    let variableResult = runCode(mockData);\n\n    // Verify that the variable returns a result.\n    assertThat(variableResult).isNotEqualTo(undefined);\n- name: custom - testC\n  code: |-\n    const mockData = {\n      // Mocked field values\n      selectTarget: 'any',\n      getType: 'custom',\n      customName: 'testC'\n    };\n\n    // Call runCode to run the template's code.\n    let variableResult = runCode(mockData);\n\n    // Verify that the variable returns a result.\n    assertThat(variableResult).isNotEqualTo(undefined);\n\n\n___NOTES___\n\nCreated on 2021/6/21 12:59:49\n\n\n",
+                "galleryReference": {
+                    "host": "github.com",
+                    "owner": "Ayudante",
+                    "repository": "gtm-consent-state",
+                    "version": "355182c84e0d0036f8b1b4fa68ce503bcd3d807f",
+                    "signature": "817c613eaf04add9a3ed2240ab3c10ac2df8a284f39c3279247c453a32b4b2cc",
+                    "galleryTemplateId": "M6BW3"
+                }
+            }
+        ]
+    }
+}

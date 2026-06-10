@@ -655,20 +655,37 @@ function gtag() {
 	dataLayer.push(arguments);
 }
 
-if (localStorage.getItem('consentMode') === null) {
-	gtag('consent', 'default', {
-		'ad_storage': 'denied',
-		'ad_user_data': 'denied',
-		'ad_personalization': 'denied',
-		'analytics_storage': 'denied',
-		'personalization_storage': 'denied',
-		'functionality_storage': 'granted',
-		'security_storage': 'granted',
-		'wait_for_update': 500,
-	});
-} else {
-	gtag('consent', 'default', JSON.parse(localStorage.getItem('consentMode')));
+var defaultConsent = {
+	'ad_storage': 'denied',
+	'ad_user_data': 'denied',
+	'ad_personalization': 'denied',
+	'analytics_storage': 'denied',
+	'personalization_storage': 'denied',
+	'functionality_storage': 'granted',
+	'security_storage': 'granted',
+	'wait_for_update': 500,
+};
+
+var raw = localStorage.getItem('consentMode');
+var consent = defaultConsent;
+
+if (raw !== null) {
+	try {
+		// The cookie-wall banner persists { consentMode: {...}, expiration: ... },
+		// so unwrap consentMode before replaying the stored choice. When the stored
+		// choice has expired, fall back to the denied defaults so the banner can
+		// re-prompt instead of replaying stale consent.
+		var stored = JSON.parse(raw);
+
+		if (!(stored.expiration && Date.now() > stored.expiration)) {
+			consent = stored.consentMode || stored;
+		}
+	} catch (e) {
+		// Malformed value — keep the denied defaults
+	}
 }
+
+gtag('consent', 'default', consent);
 
 dataLayer.push({'event': 'gtm_consent_update'});
 JS;
