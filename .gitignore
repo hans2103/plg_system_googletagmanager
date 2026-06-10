@@ -22,3 +22,6 @@ Thumbs.db
 tmp/
 temp/
 api/
+
+# Site-specific GTM exports (use docs/gtm-starter-container.json instead)
+GTM-*_workspace*.json
