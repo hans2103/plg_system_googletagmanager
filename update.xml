@@ -7,10 +7,10 @@
         <type>plugin</type>
         <folder>system</folder>
         <client>site</client>
-        <version>26.15.01</version>
+        <version>26.24.00</version>
         <infourl title="Google Tag Manager Plugin">https://github.com/hans2103/plg_system_googletagmanager</infourl>
         <downloads>
-            <downloadurl type="full" format="zip">https://github.com/hans2103/plg_system_googletagmanager/releases/download/26.15.01/plg_system_googletagmanager-26.15.01.zip</downloadurl>
+            <downloadurl type="full" format="zip">https://github.com/hans2103/plg_system_googletagmanager/releases/download/26.24.00/plg_system_googletagmanager-26.24.00.zip</downloadurl>
         </downloads>
         <tags>
             <tag>stable</tag>
