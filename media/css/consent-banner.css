@@ -2,29 +2,28 @@
 	--consent-banner-background: #ffffff;
 	--consent-banner-color: #1a1a1a;
 	--consent-banner-border-color: #cccccc;
+	--consent-banner-backdrop-background: rgb(0 0 0 / 50%);
 	--consent-banner-font-family: sans-serif;
 	--consent-banner-spacing: 1rem;
-	--consent-banner-z-index: 9999;
+	--consent-banner-max-inline-size: 32rem;
 	--consent-banner-icon-z-index: 9998;
 	--consent-banner-icon-size: 3rem;
 	--consent-banner-icon-font-size: 1.5rem;
 }
 
 .plg-consent-banner {
-	display: none;
-	position: fixed;
-	inset-inline: 0;
-	inset-block-end: 0;
-	z-index: var(--consent-banner-z-index);
+	max-inline-size: var(--consent-banner-max-inline-size);
+	width: 100%;
 	background: var(--consent-banner-background);
 	color: var(--consent-banner-color);
-	border-block-start: 1px solid var(--consent-banner-border-color);
+	border: 1px solid var(--consent-banner-border-color);
+	border-radius: 0.5rem;
 	padding: var(--consent-banner-spacing);
 	font-family: var(--consent-banner-font-family);
 }
 
-.plg-consent-banner.is-open {
-	display: block;
+.plg-consent-banner::backdrop {
+	background: var(--consent-banner-backdrop-background);
 }
 
 .plg-consent-banner__preferences {

@@ -4,17 +4,22 @@
 	/**
 	 * Markup contract for the consent banner (both default and site-override layouts must satisfy):
 	 *
+	 * DOM element:
+	 *   [data-consent-banner]                            — must be a <dialog> element, shown via showModal()/close()
+	 *
 	 * DOM attributes:
-	 *   [data-consent-banner]                            — root element anchor
 	 *   [data-consent-expiration-ms="<milliseconds>"]    — expiration duration (defaults to 365 days)
 	 *   [data-consent-action="<action>"]                 — button actions: accept-all, reject-all, save, open-preferences
 	 *   [data-consent-category="analytics"]              — checkbox control for analytics consent
 	 *   [data-consent-category="marketing"]              — checkbox control for marketing consent
-	 *   [data-consent-icon]                              — icon button to reopen preferences
+	 *   [data-consent-icon]                              — icon button to reopen the dialog
 	 *
-	 * CSS class toggling (script toggles these on the root [data-consent-banner] element):
-	 *   .is-open                 — root is visible (initial state if no consent found)
+	 * CSS class toggling (script toggles this on the root [data-consent-banner] element):
 	 *   .is-preferences-open     — preferences view is shown (prompt view hidden)
+	 *
+	 * Visibility itself is handled natively via the <dialog> element's showModal()/close() methods,
+	 * not via a CSS class — the browser's own top-layer/::backdrop handles showing, centering, and
+	 * blocking interaction with the rest of the page.
 	 *
 	 * Element requirements:
 	 *   [data-consent-category="..."] must be real checkbox-like controls with a .checked property
@@ -99,11 +104,16 @@
 		var hasConsent = readStoredConsent() !== null;
 
 		function setOpen(open) {
-			root.classList.toggle('is-open', open);
-			root.setAttribute('aria-hidden', open ? 'false' : 'true');
+			if (open) {
+				root.showModal();
+			} else {
+				root.close();
+			}
 		}
 
-		setOpen(!hasConsent);
+		if (!hasConsent) {
+			setOpen(true);
+		}
 
 		root.addEventListener('click', function (event) {
 			var target = event.target.closest('[data-consent-action]');

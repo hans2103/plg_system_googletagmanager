@@ -20,7 +20,7 @@ extract($displayData);
 /** @var bool $showMarketing */
 /** @var int $expirationMilliseconds */
 ?>
-<div class="plg-consent-banner" data-consent-banner data-consent-expiration-ms="<?php echo (int) $expirationMilliseconds; ?>" aria-hidden="true">
+<dialog class="plg-consent-banner" data-consent-banner data-consent-expiration-ms="<?php echo (int) $expirationMilliseconds; ?>">
 	<div class="plg-consent-banner__prompt">
 		<p class="plg-consent-banner__text"><?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_BANNER_TEXT'); ?></p>
 		<div class="plg-consent-banner__actions">
@@ -62,5 +62,5 @@ extract($displayData);
 			<button type="button" data-consent-action="save"><?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_SAVE_PREFERENCES'); ?></button>
 		</div>
 	</div>
-</div>
+</dialog>
 <button type="button" class="plg-consent-banner__icon" data-consent-icon aria-label="<?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_REOPEN'); ?>">🍪</button>
