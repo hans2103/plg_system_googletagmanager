@@ -1,6 +1,27 @@
 (function () {
 	'use strict';
 
+	/**
+	 * Markup contract for the consent banner (both default and site-override layouts must satisfy):
+	 *
+	 * DOM attributes:
+	 *   [data-consent-banner]                            — root element anchor
+	 *   [data-consent-expiration-ms="<milliseconds>"]    — expiration duration (defaults to 365 days)
+	 *   [data-consent-action="<action>"]                 — button actions: accept-all, reject-all, save, open-preferences
+	 *   [data-consent-category="analytics"]              — checkbox control for analytics consent
+	 *   [data-consent-category="marketing"]              — checkbox control for marketing consent
+	 *   [data-consent-icon]                              — icon button to reopen preferences
+	 *
+	 * CSS class toggling (script toggles these on the root [data-consent-banner] element):
+	 *   .is-open                 — root is visible (initial state if no consent found)
+	 *   .is-preferences-open     — preferences view is shown (prompt view hidden)
+	 *
+	 * Element requirements:
+	 *   [data-consent-category="..."] must be real checkbox-like controls with a .checked property
+	 *     (native <input type="checkbox">, or a custom element exposing .checked).
+	 *     They can be visually restyled via CSS (e.g. appearance: none) but must remain checkboxes under the hood.
+	 */
+
 	var STORAGE_KEY = 'consentMode';
 
 	function readStoredConsent() {
