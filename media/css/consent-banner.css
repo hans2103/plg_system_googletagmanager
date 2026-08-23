@@ -1,14 +1,26 @@
+:root {
+	--consent-banner-background: #ffffff;
+	--consent-banner-color: #1a1a1a;
+	--consent-banner-border-color: #cccccc;
+	--consent-banner-font-family: sans-serif;
+	--consent-banner-spacing: 1rem;
+	--consent-banner-z-index: 9999;
+	--consent-banner-icon-z-index: 9998;
+	--consent-banner-icon-size: 3rem;
+	--consent-banner-icon-font-size: 1.5rem;
+}
+
 .plg-consent-banner {
 	display: none;
 	position: fixed;
 	inset-inline: 0;
 	inset-block-end: 0;
-	z-index: 9999;
-	background: #ffffff;
-	color: #1a1a1a;
-	border-block-start: 1px solid #cccccc;
-	padding: 1rem;
-	font-family: sans-serif;
+	z-index: var(--consent-banner-z-index);
+	background: var(--consent-banner-background);
+	color: var(--consent-banner-color);
+	border-block-start: 1px solid var(--consent-banner-border-color);
+	padding: var(--consent-banner-spacing);
+	font-family: var(--consent-banner-font-family);
 }
 
 .plg-consent-banner.is-open {
@@ -37,9 +49,9 @@
 	flex: 1 1 auto;
 	padding: 0.5rem 1rem;
 	font-size: 1rem;
-	border: 1px solid #1a1a1a;
-	background: #ffffff;
-	color: #1a1a1a;
+	border: 1px solid var(--consent-banner-color);
+	background: var(--consent-banner-background);
+	color: var(--consent-banner-color);
 	cursor: pointer;
 }
 
@@ -52,12 +64,12 @@
 	position: fixed;
 	inset-inline-start: 1rem;
 	inset-block-end: 1rem;
-	z-index: 9998;
-	width: 3rem;
-	height: 3rem;
+	z-index: var(--consent-banner-icon-z-index);
+	width: var(--consent-banner-icon-size);
+	height: var(--consent-banner-icon-size);
 	border-radius: 50%;
-	border: 1px solid #1a1a1a;
-	background: #ffffff;
-	font-size: 1.5rem;
+	border: 1px solid var(--consent-banner-color);
+	background: var(--consent-banner-background);
+	font-size: var(--consent-banner-icon-font-size);
 	cursor: pointer;
 }
