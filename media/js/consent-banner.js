@@ -21,6 +21,10 @@
 	 * not via a CSS class — the browser's own top-layer/::backdrop handles showing, centering, and
 	 * blocking interaction with the rest of the page.
 	 *
+	 * Backdrop clicks never close the dialog (see the `event.target === root` guard
+	 * in the click handler below) — the dialog can only be dismissed via an explicit
+	 * accept-all/reject-all/save action, by design.
+	 *
 	 * Element requirements:
 	 *   [data-consent-category="..."] must be real checkbox-like controls with a .checked property
 	 *     (native <input type="checkbox">, or a custom element exposing .checked).
@@ -112,6 +116,14 @@
 		}
 
 		root.addEventListener('click', function (event) {
+			// Clicking the ::backdrop dispatches a click with the dialog itself as the
+			// event target (there is no real element "outside" the dialog to click on).
+			// Ignore it so the dialog can only ever be dismissed via an explicit
+			// accept/reject/save choice, never by clicking outside it.
+			if (event.target === root) {
+				return;
+			}
+
 			var target = event.target.closest('[data-consent-action]');
 
 			if (!target) {

@@ -20,7 +20,7 @@ extract($displayData);
 /** @var bool $showMarketing */
 /** @var int $expirationMilliseconds */
 ?>
-<dialog class="plg-consent-banner" data-consent-banner data-consent-expiration-ms="<?php echo (int) $expirationMilliseconds; ?>">
+<dialog class="plg-consent-banner" data-consent-banner data-consent-expiration-ms="<?php echo (int) $expirationMilliseconds; ?>" aria-label="<?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_DIALOG_LABEL'); ?>">
 	<div class="plg-consent-banner__prompt">
 		<p class="plg-consent-banner__text"><?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_BANNER_TEXT'); ?></p>
 		<div class="plg-consent-banner__actions">
@@ -34,25 +34,25 @@ extract($displayData);
 			<legend><?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_CATEGORIES_LEGEND'); ?></legend>
 			<div class="plg-consent-banner__category">
 				<label>
-					<input type="checkbox" checked disabled>
+					<input type="checkbox" checked disabled aria-describedby="plg-consent-banner-functional-desc">
 					<?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_CATEGORY_FUNCTIONAL'); ?>
 				</label>
-				<p><?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_CATEGORY_FUNCTIONAL_DESC'); ?></p>
+				<p id="plg-consent-banner-functional-desc"><?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_CATEGORY_FUNCTIONAL_DESC'); ?></p>
 			</div>
 			<div class="plg-consent-banner__category">
 				<label>
-					<input type="checkbox" data-consent-category="analytics">
+					<input type="checkbox" data-consent-category="analytics" aria-describedby="plg-consent-banner-analytics-desc">
 					<?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_CATEGORY_ANALYTICS'); ?>
 				</label>
-				<p><?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_CATEGORY_ANALYTICS_DESC'); ?></p>
+				<p id="plg-consent-banner-analytics-desc"><?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_CATEGORY_ANALYTICS_DESC'); ?></p>
 			</div>
 			<?php if ($showMarketing) : ?>
 			<div class="plg-consent-banner__category">
 				<label>
-					<input type="checkbox" data-consent-category="marketing">
+					<input type="checkbox" data-consent-category="marketing" aria-describedby="plg-consent-banner-marketing-desc">
 					<?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_CATEGORY_MARKETING'); ?>
 				</label>
-				<p><?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_CATEGORY_MARKETING_DESC'); ?></p>
+				<p id="plg-consent-banner-marketing-desc"><?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_CATEGORY_MARKETING_DESC'); ?></p>
 			</div>
 			<?php endif; ?>
 		</fieldset>
@@ -63,4 +63,4 @@ extract($displayData);
 		</div>
 	</div>
 </dialog>
-<button type="button" class="plg-consent-banner__icon" data-consent-icon aria-label="<?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_REOPEN'); ?>">🍪</button>
+<button type="button" class="plg-consent-banner__icon" data-consent-icon aria-label="<?php echo Text::_('PLG_SYSTEM_GOOGLETAGMANAGER_CONSENT_REOPEN'); ?>"><span aria-hidden="true">🍪</span></button>
