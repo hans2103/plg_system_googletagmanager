@@ -810,6 +810,12 @@ JS;
 	 */
 	private function renderConsentBanner(ConsentBannerConfig $config): string
 	{
+		// Joomla doesn't auto-load a system plugin's language file for frontend Text::_()
+		// calls, so the layout's strings would render as raw language keys without this.
+		// Same pattern used by plg_captcha_recaptcha_v3 for the same reason; JPATH_ADMINISTRATOR
+		// is correct because Joomla installs plugin language files there, not under site/language.
+		$this->getApplication()->getLanguage()->load('plg_system_googletagmanager', JPATH_ADMINISTRATOR);
+
 		$template = $this->getApplication()->getTemplate();
 
 		$renderer = new FileLayout('consent-banner');
