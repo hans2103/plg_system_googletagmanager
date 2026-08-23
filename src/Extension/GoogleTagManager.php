@@ -15,8 +15,10 @@ namespace HKweb\Plugin\System\GoogleTagManager\Extension;
 
 defined('_JEXEC') or die;
 
+use HKweb\Plugin\System\GoogleTagManager\ConsentBanner\ConsentBannerConfig;
 use Joomla\CMS\Document\HtmlDocument;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Layout\FileLayout;
 use Joomla\Http\HttpFactory;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
@@ -127,6 +129,26 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	 * @since  26.14.12
 	 */
 	private bool $cookieKeeperResolved = false;
+
+	/**
+	 * Cached consent banner configuration
+	 *
+	 * @var    ConsentBannerConfig|null
+	 * @since  26.25.00
+	 */
+	private ?ConsentBannerConfig $consentBannerConfig = null;
+
+	/**
+	 * Get the consent banner configuration
+	 *
+	 * @return  ConsentBannerConfig
+	 *
+	 * @since   26.25.00
+	 */
+	private function getConsentBannerConfig(): ConsentBannerConfig
+	{
+		return $this->consentBannerConfig ??= new ConsentBannerConfig($this->params);
+	}
 
 	/**
 	 * Character set used when generating obfuscated loader strings
@@ -761,6 +783,45 @@ JS;
 		}
 
 		$document->getWebAssetManager()->addInlineScript($headScript);
+
+		if ($this->getConsentBannerConfig()->isEnabled())
+		{
+			$document->getWebAssetManager()
+				->registerAndUseScript('plg_system_googletagmanager.consent-banner', 'plg_system_googletagmanager/consent-banner.js', [], ['defer' => true])
+				->registerAndUseStyle('plg_system_googletagmanager.consent-banner', 'plg_system_googletagmanager/consent-banner.css');
+		}
+	}
+
+	/**
+	 * Render the consent banner markup, preferring a site template override.
+	 *
+	 * Uses an explicit include path list (site override first, this plugin's
+	 * bundled default second) rather than LayoutHelper::render()'s $basePath
+	 * argument, because FileLayout::getDefaultIncludePaths() gives an explicit
+	 * $basePath *higher* priority than the site template override path - which
+	 * would make the plugin default always win. Mirrors the pattern used by
+	 * Joomla core's own plg_system_stats (see AbstractStatsField::getRenderer()).
+	 *
+	 * @param   ConsentBannerConfig  $config  The resolved consent banner configuration
+	 *
+	 * @return  string  The rendered banner HTML
+	 *
+	 * @since   26.25.00
+	 */
+	private function renderConsentBanner(ConsentBannerConfig $config): string
+	{
+		$template = $this->getApplication()->getTemplate();
+
+		$renderer = new FileLayout('consent-banner');
+		$renderer->setIncludePaths([
+			JPATH_THEMES . '/' . $template . '/html/layouts/googletagmanager',
+			JPATH_PLUGINS . '/system/googletagmanager/layouts',
+		]);
+
+		return $renderer->render([
+			'showMarketing'          => $config->showMarketingCategory(),
+			'expirationMilliseconds' => $config->getExpirationMilliseconds(),
+		]);
 	}
 
 	/**
@@ -812,6 +873,14 @@ HTML;
 
 		$buffer = $application->getBody();
 		$buffer = (string) preg_replace('/<body(\s[^>]*)?>/i', "$0\n{$bodyScript}", $buffer, 1);
+
+		$consentBannerConfig = $this->getConsentBannerConfig();
+
+		if ($consentBannerConfig->isEnabled())
+		{
+			$bannerHtml = $this->renderConsentBanner($consentBannerConfig);
+			$buffer     = (string) preg_replace('/<\/body>/i', $bannerHtml . '$0', $buffer, 1);
+		}
 
 		$application->setBody($buffer);
 	}
