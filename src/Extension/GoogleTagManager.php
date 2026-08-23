@@ -714,6 +714,13 @@ JS;
 
 		$document->getWebAssetManager()->addInlineScript($consentScript);
 
+		if ($this->getConsentBannerConfig()->isEnabled())
+		{
+			$document->getWebAssetManager()
+				->registerAndUseScript('plg_system_googletagmanager.consent-banner', 'plg_system_googletagmanager/consent-banner.js', [], ['defer' => true])
+				->registerAndUseStyle('plg_system_googletagmanager.consent-banner', 'plg_system_googletagmanager/consent-banner.css');
+		}
+
 		// Highest priority: manually pasted custom loader script from the Stape dashboard.
 		$pastedScript = $this->getPastedLoaderScript();
 
@@ -783,13 +790,6 @@ JS;
 		}
 
 		$document->getWebAssetManager()->addInlineScript($headScript);
-
-		if ($this->getConsentBannerConfig()->isEnabled())
-		{
-			$document->getWebAssetManager()
-				->registerAndUseScript('plg_system_googletagmanager.consent-banner', 'plg_system_googletagmanager/consent-banner.js', [], ['defer' => true])
-				->registerAndUseStyle('plg_system_googletagmanager.consent-banner', 'plg_system_googletagmanager/consent-banner.css');
-		}
 	}
 
 	/**
