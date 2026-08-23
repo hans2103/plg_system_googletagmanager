@@ -111,10 +111,6 @@
 			}
 		}
 
-		if (!hasConsent) {
-			setOpen(true);
-		}
-
 		root.addEventListener('click', function (event) {
 			var target = event.target.closest('[data-consent-action]');
 
@@ -145,6 +141,10 @@
 				root.classList.add('is-preferences-open');
 				setOpen(true);
 			});
+		}
+
+		if (!hasConsent) {
+			setOpen(true);
 		}
 	}
 
