@@ -25,6 +25,7 @@ api/
 
 # Git worktrees (superpowers subagent-driven-development scratch workspaces)
 .worktrees/
+.superpowers/
 
 # Composer (added for PHPUnit test tooling)
 /vendor/
