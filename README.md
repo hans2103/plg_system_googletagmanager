@@ -18,6 +18,7 @@ A Joomla 6.x system plugin for Google Tag Manager (GTM) integration with GDPR-co
   - Or enter a Container Identifier for local deterministic obfuscation
   - Or enter the filename and params manually
 - **Cookie Keeper** support for Safari ITP bypass (Stape power-up)
+- Optional **native cookie consent banner** that works fully independently of GTM's client-side script loading
 
 ## Requirements
 
@@ -140,6 +141,28 @@ When the wrapped value carries an `expiration` timestamp (milliseconds since epo
 
 ---
 
+## Native Consent Banner
+
+By default the plugin assumes a consent banner is provided elsewhere (e.g. a Custom HTML tag inside your GTM container, such as the one in the [starter container](#google-tag-manager-container) below). Enable **Render the consent banner natively?** to have the plugin render and manage a self-contained cookie banner itself, independently of whether `gtm.js` loads — it writes directly to the same `localStorage['consentMode']` key and calls `gtag('consent', 'update', …)`.
+
+| Field | Description |
+|---|---|
+| **Render the consent banner natively?** | Off by default (zero behaviour change). When enabled, the plugin's own banner handles consent end-to-end. |
+| **Show Marketing category?** | On by default. Disable if the site runs no advertising/marketing tags, to avoid showing an irrelevant category to visitors. |
+| **Consent validity (days)** | Default `365`. Number of days a visitor's choice remains valid before they're asked again. No fixed duration is legally mandated. |
+
+**Avoid showing two banners at once** — if you enable this, disable or remove any existing consent banner tag inside your GTM container first.
+
+The default banner is intentionally plain (functional/analytics/marketing categories, accept/reject/customize). To match your site's design, override `layouts/consent-banner.php` from a site template at:
+
+```
+templates/<your-template>/html/layouts/googletagmanager/consent-banner.php
+```
+
+It receives `$displayData['showMarketing']` (bool) and `$displayData['expirationMilliseconds']` (int), and must render markup using the same `data-consent-banner` / `data-consent-action` / `data-consent-category` / `data-consent-icon` attribute contract that `media/js/consent-banner.js` reads — the bundled layout in this plugin is the reference implementation for that contract.
+
+---
+
 ## Google Tag Manager container
 
 This plugin only injects the GTM loader and the consent-mode bootstrap; the tags, triggers and consent logic live inside your GTM container. A ready-to-import starter container is provided at [`docs/gtm-starter-container.json`](docs/gtm-starter-container.json).
@@ -211,6 +234,8 @@ The GitHub Actions workflow automatically:
    - `services/`
    - `src/`
    - `language/`
+   - `layouts/`
+   - `media/`
 3. Attaches the package to the release
 4. Extracts the changelog section from `CHANGELOG.md`
 5. Updates `update.xml` with the new version and download URL

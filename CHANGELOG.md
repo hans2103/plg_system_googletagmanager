@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.35.00] - 2026-08-30
+
+### Added
+- Native, self-contained cookie consent banner (`native_consent_banner` param, off by default) that renders and manages consent entirely independently of whether GTM's client-side script loads, reusing the existing `localStorage['consentMode']` Consent Mode v2 contract
+- `consent_category_marketing` param to hide the Marketing category on sites that run no advertising/marketing tags
+- `consent_expiration_days` param (default 365) controlling how long a visitor's stored choice remains valid before they're re-prompted
+- Default banner layout, JS behaviour, and CSS (`layouts/consent-banner.php`, `media/js/consent-banner.js`, `media/css/consent-banner.css`), overridable per site template via `templates/<template>/html/layouts/googletagmanager/consent-banner.php`
+- Full `nl-NL` translation of the plugin's admin interface
+
+### Changed
+- README documents the native consent banner: enabling it, its params, the site-template override path, and the "disable any existing GTM-based banner tag" caveat to avoid showing two banners at once
+
 ## [26.24.00] - 2026-06-10
 
 ### Fixed
