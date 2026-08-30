@@ -22,7 +22,14 @@
     <languages folder="language">
         <language tag="en-GB">en-GB/plg_system_googletagmanager.ini</language>
         <language tag="en-GB">en-GB/plg_system_googletagmanager.sys.ini</language>
+        <language tag="nl-NL">nl-NL/plg_system_googletagmanager.ini</language>
+        <language tag="nl-NL">nl-NL/plg_system_googletagmanager.sys.ini</language>
     </languages>
+
+    <media folder="media" destination="plg_system_googletagmanager">
+        <folder>js</folder>
+        <folder>css</folder>
+    </media>
 
     <config>
         <fields name="params">
@@ -146,6 +153,46 @@
                     default=""
                     description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_SERVER_SIDE_PATH_DESC"
                     showon="server_side_tagging:1"
+                />
+            </fieldset>
+            <fieldset name="consent_banner" label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELDSET_CONSENT_BANNER">
+                <field
+                    name="native_consent_banner"
+                    type="radio"
+                    label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_NATIVE_CONSENT_BANNER_LABEL"
+                    default="0"
+                    layout="joomla.form.field.radio.switcher"
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_NATIVE_CONSENT_BANNER_DESC"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field
+                    name="native_banner_note"
+                    type="note"
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_NATIVE_BANNER_NOTE_DESC"
+                    showon="native_consent_banner:1"
+                />
+                <field
+                    name="consent_category_marketing"
+                    type="radio"
+                    label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_CONSENT_CATEGORY_MARKETING_LABEL"
+                    default="1"
+                    layout="joomla.form.field.radio.switcher"
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_CONSENT_CATEGORY_MARKETING_DESC"
+                    showon="native_consent_banner:1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field
+                    name="consent_expiration_days"
+                    type="number"
+                    label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_CONSENT_EXPIRATION_DAYS_LABEL"
+                    default="365"
+                    min="1"
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_CONSENT_EXPIRATION_DAYS_DESC"
+                    showon="native_consent_banner:1"
                 />
             </fieldset>
             <fieldset name="advanced" label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELDSET_ADVANCED">

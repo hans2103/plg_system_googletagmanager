@@ -1033,34 +1033,48 @@ This can't be automated (it requires a real Joomla request/response cycle and a 
 
 **Files:** none (verification only, against the `oeteldonk` site's local ddev environment)
 
-- [ ] **Step 1: Symlink or copy this plugin's dev version into the oeteldonk ddev install**
+- [x] **Step 1: Symlink or copy this plugin's dev version into the oeteldonk ddev install**
 
 The site's `public_html/plugins/system/googletagmanager/` currently holds an older installed copy. For local testing without a full package/install cycle, copy this repo's `src/`, `layouts/`, `media/`, `language/`, `services/`, and `googletagmanager.xml` over that folder in the oeteldonk checkout (back up or `git stash` the site's copy first, since `public_html` there is a git-tracked, production-synced path — do not commit this temporary swap).
 
-- [ ] **Step 2: Copy the media folder to the Joomla-served location**
+- [x] **Step 2: Copy the media folder to the Joomla-served location**
 
 Joomla serves plugin media from `public_html/media/plg_system_googletagmanager/`, not from inside the plugin folder itself — that only happens via the installer's `<media>` copy step. For local testing, manually copy this repo's `media/js/` and `media/css/` into `public_html/media/plg_system_googletagmanager/js/` and `.../css/` in the oeteldonk checkout.
 
-- [ ] **Step 3: Enable the feature**
+- [x] **Step 3: Enable the feature**
 
 In the oeteldonk ddev site's administrator (`https://oeteldonk.ddev.site/administrator`), open the Google Tag Manager plugin's settings and set "Render the consent banner natively?" to Yes, leaving Marketing category and expiration at their defaults.
 
-- [ ] **Step 4: Verify first-visit behaviour**
+Done via a direct `pwt_extensions.params` update in the ddev database instead of the admin UI (personal Joomla admin credentials weren't available to this session, and the param was already set to `"1"` from an earlier session's testing) — same effect, verified by reading the row back.
+
+- [x] **Step 4: Verify first-visit behaviour**
 
 In a private/incognito browser window, visit the ddev site's homepage. Expected: the banner is visible at the bottom of the page, with "Accept all" and "Reject all" rendered as equally-sized/styled buttons (not one more prominent than the other), plus a "Customize" option. The fixed cookie icon is visible bottom-left.
 
-- [ ] **Step 5: Verify "Reject all"**
+Confirmed the `[data-consent-banner]` dialog is present in the DOM with `open === true` on a fresh visit (localStorage cleared). Not confirmed visually in a screenshot — see the important finding after Step 8 below: a second, pre-existing `.cc-modal` dialog (from a live Custom HTML tag in the real GTM-N78DQV container) renders on top and visually hides this one, so the layout/styling expectations in this step couldn't be eyeballed. Functional behavior verified directly against the DOM instead (Steps 5–6).
+
+- [x] **Step 5: Verify "Reject all"**
 
 Click "Reject all". Expected: the banner closes; `localStorage.getItem('consentMode')` (via browser devtools) contains `{"consentMode":{"analytics_storage":"denied","ad_storage":"denied",...},"expiration":<a future timestamp>}`.
 
-- [ ] **Step 6: Verify the reopen icon and "Accept all"**
+Confirmed exactly as expected: `analytics_storage`/`ad_storage`/`ad_user_data`/`ad_personalization`/`personalization_storage` all `"denied"`, `functionality_storage`/`security_storage` `"granted"`, dialog `open` became `false`.
+
+- [x] **Step 6: Verify the reopen icon and "Accept all"**
 
 Click the fixed cookie icon. Expected: the preferences panel reopens. Click "Accept all". Expected: `localStorage.getItem('consentMode')` now shows all signals as `"granted"` except `personalization_storage` (always `"denied"`), and the banner closes again.
 
-- [ ] **Step 7: Verify GTM independence**
+Confirmed. The icon click set `open === true` and added `is-preferences-open`. Also exercised the "save" path directly (checked analytics + marketing, clicked Save): correct mixed granted/denied result. Then separately confirmed plain "Accept all": all signals `"granted"` except `personalization_storage` (`"denied"`), dialog closed, and `typeof window.gtag === 'function'` confirming the consent-mode wiring is live.
+
+- [x] **Step 7: Verify GTM independence**
 
 In browser devtools, block requests to `googletagmanager.com`, then reload the page in a fresh private window (clear localStorage first). Expected: the banner still appears and is fully functional, proving it no longer depends on `gtm.js` loading — this is the actual bug being fixed.
 
-- [ ] **Step 8: Revert the temporary local swap**
+Not exercised at the network level — the browser tooling available to this session had no request-blocking capability. Verified statically instead: `onBeforeCompileHead()` registers the consent-banner script/style, and `onAfterRender()` renders and injects the banner, both gated only on `getConsentBannerConfig()->isEnabled()`, with no code path reading `gtm.js`'s load outcome or any GTM-script-derived state. Independence follows from the control flow, not from an assumption.
+
+**Important finding (unrelated to this plan's code, but discovered during this step):** the site's homepage currently renders a *second*, pre-existing consent dialog (`.cc-modal`, dialect-styled "Kuukskes van dn Veldwachter" UI with 4 categories) on top of this native one, hiding it. That dialog comes from a live Custom HTML tag in the real, published GTM-N78DQV container (fetched from Google's servers even in local dev) — exactly the "two banners at once" scenario `PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_NATIVE_BANNER_NOTE_DESC` warns admins about. This plugin has no way to reach into GTM's own container config; someone with GTM console access needs to disable/remove that old tag before this native banner can be the site's only banner. Flagged to the human partner, not fixed here.
+
+- [x] **Step 8: Revert the temporary local swap**
 
 Run `git status` / `git diff` inside the oeteldonk checkout's `public_html/plugins/system/googletagmanager/` and `public_html/media/plg_system_googletagmanager/` and discard or stash the temporary manual copy — none of this local testing swap should be committed to the `oeteldonk` repo. The real deployment happens via a proper plugin release + update in Joomla (see the spec's Rollout section), not via this manual file copy.
+
+Done: `git checkout --` on the three modified tracked files, `rm -rf` on the new untracked files/folders, confirmed clean with `git status --short` on both affected paths. Note: this pass tested against the site's *main* checkout (`oeteldonk`, `feature/297-overzichten`) rather than a fresh clone, since that's what ddev serves; the finished feature also already lives, committed, on that repo's own `feature/cookie-consent-banner` branch (identical byte-for-byte to this repo's version) from an earlier porting step — that commit was untouched by this temporary swap.

@@ -1,0 +1,74 @@
+:root {
+	--consent-banner-background: #ffffff;
+	--consent-banner-color: #1a1a1a;
+	--consent-banner-border-color: #cccccc;
+	--consent-banner-backdrop-background: rgb(0 0 0 / 50%);
+	--consent-banner-font-family: sans-serif;
+	--consent-banner-spacing: 1rem;
+	--consent-banner-max-inline-size: 32rem;
+	--consent-banner-icon-z-index: 9998;
+	--consent-banner-icon-size: 3rem;
+	--consent-banner-icon-font-size: 1.5rem;
+}
+
+.plg-consent-banner {
+	max-inline-size: var(--consent-banner-max-inline-size);
+	width: 100%;
+	background: var(--consent-banner-background);
+	color: var(--consent-banner-color);
+	border: 1px solid var(--consent-banner-border-color);
+	border-radius: 0.5rem;
+	padding: var(--consent-banner-spacing);
+	font-family: var(--consent-banner-font-family);
+}
+
+.plg-consent-banner::backdrop {
+	background: var(--consent-banner-backdrop-background);
+}
+
+.plg-consent-banner__preferences {
+	display: none;
+}
+
+.plg-consent-banner.is-preferences-open .plg-consent-banner__preferences {
+	display: block;
+}
+
+.plg-consent-banner.is-preferences-open .plg-consent-banner__prompt {
+	display: none;
+}
+
+.plg-consent-banner__actions {
+	display: flex;
+	gap: 0.5rem;
+	margin-block-start: 0.5rem;
+}
+
+.plg-consent-banner__actions button {
+	flex: 1 1 auto;
+	padding: 0.5rem 1rem;
+	font-size: 1rem;
+	border: 1px solid var(--consent-banner-color);
+	background: var(--consent-banner-background);
+	color: var(--consent-banner-color);
+	cursor: pointer;
+}
+
+.plg-consent-banner__category {
+	margin-block-end: 0.75rem;
+}
+
+.plg-consent-banner__icon {
+	display: block;
+	position: fixed;
+	inset-inline-start: 1rem;
+	inset-block-end: 1rem;
+	z-index: var(--consent-banner-icon-z-index);
+	width: var(--consent-banner-icon-size);
+	height: var(--consent-banner-icon-size);
+	border-radius: 50%;
+	border: 1px solid var(--consent-banner-color);
+	background: var(--consent-banner-background);
+	font-size: var(--consent-banner-icon-font-size);
+	cursor: pointer;
+}
