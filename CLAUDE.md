@@ -112,6 +112,9 @@ The GitHub Actions workflow (.github/workflows/release.yml) automatically:
    - `googletagmanager.xml` (plugin manifest)
    - `services/` (DI container configuration)
    - `src/` (plugin source code)
+   - `language/` (en-GB and nl-NL translations)
+   - `layouts/` (overridable default layouts, e.g. the consent banner)
+   - `media/` (JS/CSS assets installed under `media/plg_system_googletagmanager/`)
 4. Excludes documentation files: `CLAUDE.md`, `README.md`, `CHANGELOG.md`, `update.xml`, `.github/`
 5. Generates changelog from git commits
 6. Attaches package to release

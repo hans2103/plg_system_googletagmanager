@@ -23,5 +23,12 @@ tmp/
 temp/
 api/
 
+# Git worktrees (superpowers subagent-driven-development scratch workspaces)
+.worktrees/
+.superpowers/
+
+# Composer (added for PHPUnit test tooling)
+/vendor/
+
 # Site-specific GTM exports (use docs/gtm-starter-container.json instead)
 GTM-*_workspace*.json

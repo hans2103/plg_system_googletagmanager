@@ -30,6 +30,8 @@ jobs:
             services/ \
             src/ \
             language/ \
+            layouts/ \
+            media/ \
             -x "*.git*" "*.DS_Store"
 
       - name: Generate release notes
