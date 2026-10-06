@@ -25,6 +25,10 @@
 	 * in the click handler below) — the dialog can only be dismissed via an explicit
 	 * accept-all/reject-all/save action, by design.
 	 *
+	 * After every choice the script calls gtag('consent', 'update', …) and pushes
+	 * {event: 'gtm_consent_update'} to the dataLayer. Reopening via [data-consent-icon]
+	 * ticks the category checkboxes to match the stored choice.
+	 *
 	 * Element requirements:
 	 *   [data-consent-category="..."] must be real checkbox-like controls with a .checked property
 	 *     (native <input type="checkbox">, or a custom element exposing .checked).
@@ -77,6 +81,12 @@
 		if (typeof window.gtag === 'function') {
 			window.gtag('consent', 'update', consentMode);
 		}
+
+		// Same event the head script pushes on page load: GTM tags that wait for
+		// consent use it as their trigger, so they fire on this page view too
+		// instead of only on the next one.
+		window.dataLayer = window.dataLayer || [];
+		window.dataLayer.push({event: 'gtm_consent_update'});
 	}
 
 	function buildConsent(root, forcedGrant) {
@@ -146,10 +156,29 @@
 			}
 		});
 
+		// Tick the category checkboxes to match the stored choice, so reopening
+		// the preferences shows what the visitor picked last time.
+		function syncCheckboxes() {
+			var stored = readStoredConsent();
+			var categories = {
+				analytics: 'analytics_storage',
+				marketing: 'ad_storage'
+			};
+
+			Object.keys(categories).forEach(function (category) {
+				var input = root.querySelector('[data-consent-category="' + category + '"]');
+
+				if (input) {
+					input.checked = !!stored && stored[categories[category]] === 'granted';
+				}
+			});
+		}
+
 		var icon = document.querySelector('[data-consent-icon]');
 
 		if (icon) {
 			icon.addEventListener('click', function () {
+				syncCheckboxes();
 				root.classList.add('is-preferences-open');
 				setOpen(true);
 			});
