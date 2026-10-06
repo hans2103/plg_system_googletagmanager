@@ -303,8 +303,9 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	 *
 	 * Cloudflare's Google tag gateway adds its own loader at the top of <head> for
 	 * every page; a second loader from this plugin would download the container
-	 * twice. Defaults to true, so sites already in gateway mode switch over on
-	 * update without re-saving the plugin.
+	 * twice. That loader does not push the gtm.js event, so onAfterRender() pushes
+	 * it in this mode. Defaults to true, so sites already in gateway mode switch
+	 * over on update without re-saving the plugin.
 	 *
 	 * @return  bool
 	 *
@@ -983,7 +984,16 @@ HTML;
 		$buffer = $application->getBody();
 
 		// Consent Mode defaults go first in <head>, ahead of any loader (ours, or one the gateway injects)
-		$buffer = HeadScript::prepend($buffer, $this->getConsentScript(), (string) $application->get('csp_nonce', ''));
+		$headScript = $this->getConsentScript();
+
+		// The gateway's injected loader only loads the container: it does not push the gtm.js
+		// event that the standard snippet does, so Page View (All Pages) triggers would never fire.
+		if ($this->isLoaderInjectedByGateway())
+		{
+			$headScript .= "\n\ndataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});";
+		}
+
+		$buffer = HeadScript::prepend($buffer, $headScript, (string) $application->get('csp_nonce', ''));
 		$buffer = (string) preg_replace('/<body(\s[^>]*)?>/i', "$0\n{$bodyScript}", $buffer, 1);
 
 		$consentBannerConfig = $this->getConsentBannerConfig();

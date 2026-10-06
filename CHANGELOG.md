@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.41.03] - 2026-10-06
+
+### Fixed
+- Gateway mode with an injected loader (26.41.02) no longer breaks Page View triggers: Cloudflare's injected loader only loads the container and does not push the `gtm.js` event the standard snippet pushes, so tags on "All Pages" / Page View (e.g. GA4 event tags, link click listeners) stopped firing. The plugin now pushes `{'gtm.start': …, event: 'gtm.js'}` right after the Consent Mode defaults in that mode
+
 ## [26.41.02] - 2026-10-06
 
 ### Added
