@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.41.01] - 2026-10-06
+
+### Added
+- Google tag gateway mode (`tag_gateway` + `tag_gateway_path` params): loads `gtm.js` from the first-party measurement path (e.g. `/89w8`) as a root-relative URL instead of `googletagmanager.com`, so a site behind Cloudflare's Google tag gateway no longer loads the container twice. The noscript fallback stays on `googletagmanager.com`; server-side tagging takes precedence
+- `TagGateway\GatewayPath::normalize()` validates the measurement path (plain `[A-Za-z0-9_-]` segments only; full URLs, protocol-relative hosts, dot segments and quotes fall back to `googletagmanager.com`), with PHPUnit coverage
+- `nl-NL` and `en-GB` strings for the new fields
+
+### Changed
+- README documents the Google tag gateway mode
+
 ## [26.41.00] - 2026-10-06
 
 ### Fixed

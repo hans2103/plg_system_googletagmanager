@@ -12,6 +12,7 @@ A Joomla 6.x system plugin for Google Tag Manager (GTM) integration with GDPR-co
 - Frontend-only execution
 - GTM Environments support (test before publishing live)
 - Server-side tagging via your own sGTM domain
+- **Google tag gateway** support: load `gtm.js` from the first-party measurement path on your own domain (e.g. Cloudflare)
 - **Stape Custom Loader** support for enhanced ad blocker protection:
   - Paste the full snippet from the Stape dashboard
   - Or let the plugin call the Stape API to fetch it automatically
@@ -53,6 +54,23 @@ Use this to target a specific GTM environment (e.g. a staging preview) instead o
 | **GTM Environment Name** | The `gtm_preview` value from the same snippet URL (e.g. `env-2`) |
 
 Both fields must be filled in together. Leave both empty to use the live container.
+
+---
+
+## Google Tag Gateway
+
+[Google tag gateway for advertisers](https://developers.google.com/tag-platform/tag-manager/gateway/setup-guide) serves `gtm.js` and all measurement requests from a path on your own domain (the *measurement path*, e.g. `/89w8`), set up in your CDN such as [Cloudflare](https://developers.cloudflare.com/google-tag-gateway/) or in the Google tag console.
+
+With the gateway active on your domain, the plugin's snippet must load from that path too. If it keeps loading from `googletagmanager.com`, the gateway can end up serving a second copy and the container loads twice, which wastes bandwidth and risks double-counted pageviews.
+
+| Field | Description |
+|---|---|
+| **Use Google tag gateway?** | Load `gtm.js` from the measurement path instead of `googletagmanager.com`. Only shown while server-side tagging is off; server-side tagging takes precedence. |
+| **Measurement path** | The path configured for the gateway, e.g. `/89w8`. Letters, digits, dashes and underscores only; leading/trailing slashes are optional. Empty or invalid (e.g. a full URL): GTM loads from `googletagmanager.com`. |
+
+The snippet uses a root-relative URL (`/89w8/gtm.js?id=GTM-XXXXXXX`), so it follows whichever host serves the page; the gateway works zone-wide, including subdomains. The noscript fallback keeps using `googletagmanager.com`, since the gateway does not serve `ns.html`.
+
+To verify: the browser's Network tab should show a single `gtm.js` request, from the measurement path.
 
 ---
 
