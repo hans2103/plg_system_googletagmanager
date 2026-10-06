@@ -16,6 +16,7 @@ namespace HKweb\Plugin\System\GoogleTagManager\Extension;
 defined('_JEXEC') or die;
 
 use HKweb\Plugin\System\GoogleTagManager\ConsentBanner\ConsentBannerConfig;
+use HKweb\Plugin\System\GoogleTagManager\TagGateway\GatewayPath;
 use Joomla\CMS\Document\HtmlDocument;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Layout\FileLayout;
@@ -97,6 +98,22 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	 * @since  26.14.06
 	 */
 	private bool $scriptLoaderUrlResolved = false;
+
+	/**
+	 * Cached Google tag gateway measurement path (e.g. '/89w8')
+	 *
+	 * @var    string|null
+	 * @since  26.41.01
+	 */
+	private ?string $gatewayPath = null;
+
+	/**
+	 * Whether the Google tag gateway path has been resolved
+	 *
+	 * @var    bool
+	 * @since  26.41.01
+	 */
+	private bool $gatewayPathResolved = false;
 
 	/**
 	 * Cached custom loader configuration (filename + obfuscated params)
@@ -267,11 +284,39 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	}
 
 	/**
+	 * Get the Google tag gateway measurement path
+	 *
+	 * Only applies when the gateway is enabled and server-side tagging is not:
+	 * server-side tagging takes precedence because it brings its own loader URL.
+	 *
+	 * @return  string|null  The root-relative measurement path, or null when not in use
+	 *
+	 * @since   26.41.01
+	 */
+	private function getGatewayPath(): ?string
+	{
+		if (!$this->gatewayPathResolved)
+		{
+			$this->gatewayPathResolved = true;
+
+			if (!(bool) $this->params->get('server_side_tagging', 0) && (bool) $this->params->get('tag_gateway', 0))
+			{
+				$this->gatewayPath = GatewayPath::normalize((string) $this->params->get('tag_gateway_path', ''));
+			}
+		}
+
+		return $this->gatewayPath;
+	}
+
+	/**
 	 * Get the base URL used to load the GTM head script
 	 *
-	 * When a dedicated script loader URL is configured (e.g. via Stape's Custom Loader
-	 * power-up, where gtm.js is proxied through the site's own domain), that URL is
-	 * returned. Otherwise falls back to the sGTM base URL or the Google CDN default.
+	 * When the Google tag gateway is enabled, the root-relative measurement path is
+	 * returned so gtm.js loads from whichever host serves the page (the gateway works
+	 * zone-wide in Cloudflare). When a dedicated script loader URL is configured (e.g.
+	 * via Stape's Custom Loader power-up, where gtm.js is proxied through the site's own
+	 * domain), that URL is returned. Otherwise falls back to the sGTM base URL or the
+	 * Google CDN default.
 	 *
 	 * @return  string  The base URL from which gtm.js is served
 	 *
@@ -279,6 +324,13 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	 */
 	private function getScriptLoaderUrl(): string
 	{
+		$gatewayPath = $this->getGatewayPath();
+
+		if ($gatewayPath !== null)
+		{
+			return $gatewayPath;
+		}
+
 		if (!$this->scriptLoaderUrlResolved)
 		{
 			$this->scriptLoaderUrlResolved = true;
