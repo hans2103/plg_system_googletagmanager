@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
-## [Unreleased]
+## [26.41.00] - 2026-10-06
 
 ### Fixed
 - Native consent banner now pushes `{event: 'gtm_consent_update'}` to the dataLayer after every choice, like the head script does on page load; GTM tags triggered on that event previously only fired from the next page view on
