@@ -61,16 +61,19 @@ Both fields must be filled in together. Leave both empty to use the live contain
 
 [Google tag gateway for advertisers](https://developers.google.com/tag-platform/tag-manager/gateway/setup-guide) serves `gtm.js` and all measurement requests from a path on your own domain (the *measurement path*, e.g. `/89w8`), set up in your CDN such as [Cloudflare](https://developers.cloudflare.com/google-tag-gateway/) or in the Google tag console.
 
-With the gateway active on your domain, the plugin's snippet must load from that path too. If it keeps loading from `googletagmanager.com`, the gateway can end up serving a second copy and the container loads twice, which wastes bandwidth and risks double-counted pageviews.
+With the gateway active on your domain, the container must be loaded once, through the measurement path. Cloudflare's gateway injects its own GTM loader at the top of `<head>` on every page (only for real browsers; `curl` does not see it). A second loader from the plugin, whether from `googletagmanager.com` or from the measurement path, downloads the container twice. GTM runs it only once, but the bytes are wasted.
 
 | Field | Description |
 |---|---|
-| **Use Google tag gateway?** | Load `gtm.js` from the measurement path instead of `googletagmanager.com`. Only shown while server-side tagging is off; server-side tagging takes precedence. |
-| **Measurement path** | The path configured for the gateway, e.g. `/89w8`. Letters, digits, dashes and underscores only; leading/trailing slashes are optional. Empty or invalid (e.g. a full URL): GTM loads from `googletagmanager.com`. |
+| **Use Google tag gateway?** | Switch to gateway mode. Only shown while server-side tagging is off; server-side tagging takes precedence. |
+| **Loader injected by the gateway?** | **Yes** (default, Cloudflare): the plugin adds no GTM loader and leaves loading to the gateway. **No**: the plugin loads `gtm.js` itself from the measurement path, for gateways that do not inject a loader. |
+| **Measurement path** | Only for **No** above: the path configured for the gateway, e.g. `/89w8`. Letters, digits, dashes and underscores only; leading/trailing slashes are optional. Empty or invalid (e.g. a full URL): GTM loads from `googletagmanager.com`. |
 
-The snippet uses a root-relative URL (`/89w8/gtm.js?id=GTM-XXXXXXX`), so it follows whichever host serves the page; the gateway works zone-wide, including subdomains. The noscript fallback keeps using `googletagmanager.com`, since the gateway does not serve `ns.html`.
+In every mode the plugin keeps adding the Consent Mode defaults, as the first script in `<head>` (right after the opening tag, with the CSP nonce when Joomla's HTTP Headers plugin sets one), so they run before any loader. The noscript fallback keeps using `googletagmanager.com`, since the gateway does not serve `ns.html`.
 
-To verify: the browser's Network tab should show a single `gtm.js` request, from the measurement path.
+When the plugin loads `gtm.js` itself, it uses a root-relative URL (`/89w8/gtm.js?id=GTM-XXXXXXX`), so it follows whichever host serves the page; the gateway works zone-wide, including subdomains.
+
+To verify, check in a real browser (DevTools → Network): a single container request from the measurement path (Cloudflare's loader requests `/89w8/`), plus a tiny `gtg_health` request to `googletagmanager.com`, which is the gateway's own health check.
 
 ---
 

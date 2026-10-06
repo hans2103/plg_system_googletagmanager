@@ -7,7 +7,7 @@
     <license>GPLv3 http://www.gnu.org/licenses/gpl.html</license>
     <authorEmail>info@hkweb.nl</authorEmail>
     <authorUrl>https://hkweb.nl</authorUrl>
-    <version>26.41.01</version>
+    <version>26.41.02</version>
     <description>PLG_SYSTEM_GOOGLETAGMANAGER_XML_DESCRIPTION</description>
 
     <php_minimum>8.3.0</php_minimum>
@@ -59,6 +59,18 @@
                     showon="server_side_tagging:0[AND]tag_gateway:1"
                 />
                 <field
+                    name="tag_gateway_injects"
+                    type="radio"
+                    label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_TAG_GATEWAY_INJECTS_LABEL"
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_TAG_GATEWAY_INJECTS_DESC"
+                    default="1"
+                    layout="joomla.form.field.radio.switcher"
+                    showon="server_side_tagging:0[AND]tag_gateway:1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field
                     name="tag_gateway_path"
                     type="text"
                     label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_TAG_GATEWAY_PATH_LABEL"
@@ -66,7 +78,7 @@
                     description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_TAG_GATEWAY_PATH_DESC"
                     hint="/89w8"
                     filter="string"
-                    showon="server_side_tagging:0[AND]tag_gateway:1"
+                    showon="server_side_tagging:0[AND]tag_gateway:1[AND]tag_gateway_injects:0"
                 />
                 <field
                     name="server_side_tagging"

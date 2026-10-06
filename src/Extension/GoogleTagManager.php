@@ -16,6 +16,7 @@ namespace HKweb\Plugin\System\GoogleTagManager\Extension;
 defined('_JEXEC') or die;
 
 use HKweb\Plugin\System\GoogleTagManager\ConsentBanner\ConsentBannerConfig;
+use HKweb\Plugin\System\GoogleTagManager\Html\HeadScript;
 use HKweb\Plugin\System\GoogleTagManager\TagGateway\GatewayPath;
 use Joomla\CMS\Document\HtmlDocument;
 use Joomla\CMS\Factory;
@@ -284,10 +285,41 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	}
 
 	/**
+	 * Whether Google tag gateway mode is active
+	 *
+	 * Server-side tagging takes precedence because it brings its own loader URL.
+	 *
+	 * @return  bool
+	 *
+	 * @since   26.41.02
+	 */
+	private function isTagGatewayEnabled(): bool
+	{
+		return !(bool) $this->params->get('server_side_tagging', 0) && (bool) $this->params->get('tag_gateway', 0);
+	}
+
+	/**
+	 * Whether the gateway injects the GTM loader itself
+	 *
+	 * Cloudflare's Google tag gateway adds its own loader at the top of <head> for
+	 * every page; a second loader from this plugin would download the container
+	 * twice. Defaults to true, so sites already in gateway mode switch over on
+	 * update without re-saving the plugin.
+	 *
+	 * @return  bool
+	 *
+	 * @since   26.41.02
+	 */
+	private function isLoaderInjectedByGateway(): bool
+	{
+		return $this->isTagGatewayEnabled() && (bool) $this->params->get('tag_gateway_injects', 1);
+	}
+
+	/**
 	 * Get the Google tag gateway measurement path
 	 *
-	 * Only applies when the gateway is enabled and server-side tagging is not:
-	 * server-side tagging takes precedence because it brings its own loader URL.
+	 * Only applies in gateway mode when this plugin loads gtm.js itself, i.e. the
+	 * gateway does not inject a loader.
 	 *
 	 * @return  string|null  The root-relative measurement path, or null when not in use
 	 *
@@ -299,7 +331,7 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 		{
 			$this->gatewayPathResolved = true;
 
-			if (!(bool) $this->params->get('server_side_tagging', 0) && (bool) $this->params->get('tag_gateway', 0))
+			if ($this->isTagGatewayEnabled() && !$this->isLoaderInjectedByGateway())
 			{
 				$this->gatewayPath = GatewayPath::normalize((string) $this->params->get('tag_gateway_path', ''));
 			}
@@ -688,41 +720,19 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	}
 
 	/**
-	 * Add a GTM script to <head>
+	 * Get the Consent Mode default script
 	 *
-	 * Adds consent mode initialization and GTM tracking script to the document head.
+	 * Initialises the data layer and replays the visitor's stored consent choice
+	 * (or the denied defaults). Placed at the very top of <head> by onAfterRender()
+	 * so it runs before any Google tag loader.
 	 *
-	 * @return  void
+	 * @return  string  The inline JavaScript
 	 *
-	 * @since   26.03.00
+	 * @since   26.41.02
 	 */
-	public function onBeforeCompileHead(): void
+	private function getConsentScript(): string
 	{
-		$application = $this->getApplication();
-
-		// Only for frontend
-		if (!$application->isClient('site'))
-		{
-			return;
-		}
-
-		$document = $application->getDocument();
-
-		// Type check for HTML document
-		if (!$document instanceof HtmlDocument)
-		{
-			return;
-		}
-
-		$gtmId = $this->getGTMId();
-
-		if ($gtmId === null)
-		{
-			return;
-		}
-
-		// Initialize consent mode and data layer
-		$consentScript = <<<JS
+		return <<<JS
 window.dataLayer = window.dataLayer || [];
 
 function gtag() {
@@ -763,14 +773,54 @@ gtag('consent', 'default', consent);
 
 dataLayer.push({'event': 'gtm_consent_update'});
 JS;
+	}
 
-		$document->getWebAssetManager()->addInlineScript($consentScript);
+	/**
+	 * Add a GTM script to <head>
+	 *
+	 * Registers the consent banner assets and adds the GTM loader script to the
+	 * document head. The Consent Mode defaults are placed in onAfterRender().
+	 *
+	 * @return  void
+	 *
+	 * @since   26.03.00
+	 */
+	public function onBeforeCompileHead(): void
+	{
+		$application = $this->getApplication();
+
+		// Only for frontend
+		if (!$application->isClient('site'))
+		{
+			return;
+		}
+
+		$document = $application->getDocument();
+
+		// Type check for HTML document
+		if (!$document instanceof HtmlDocument)
+		{
+			return;
+		}
+
+		$gtmId = $this->getGTMId();
+
+		if ($gtmId === null)
+		{
+			return;
+		}
 
 		if ($this->getConsentBannerConfig()->isEnabled())
 		{
 			$document->getWebAssetManager()
 				->registerAndUseScript('plg_system_googletagmanager.consent-banner', 'plg_system_googletagmanager/consent-banner.js', [], ['defer' => true])
 				->registerAndUseStyle('plg_system_googletagmanager.consent-banner', 'plg_system_googletagmanager/consent-banner.css');
+		}
+
+		// The Google tag gateway injects its own loader; adding ours would load the container twice.
+		if ($this->isLoaderInjectedByGateway())
+		{
+			return;
 		}
 
 		// Highest priority: manually pasted custom loader script from the Stape dashboard.
@@ -883,9 +933,10 @@ JS;
 	}
 
 	/**
-	 * Add GTM noscript directly after start body
+	 * Add the Consent Mode defaults at the top of head and GTM noscript after start body
 	 *
-	 * Injects GTM noscript fallback iframe immediately after the opening body tag.
+	 * Injects the Consent Mode default script right after the opening head tag and
+	 * the GTM noscript fallback iframe immediately after the opening body tag.
 	 *
 	 * @return  void
 	 *
@@ -930,6 +981,9 @@ JS;
 HTML;
 
 		$buffer = $application->getBody();
+
+		// Consent Mode defaults go first in <head>, ahead of any loader (ours, or one the gateway injects)
+		$buffer = HeadScript::prepend($buffer, $this->getConsentScript(), (string) $application->get('csp_nonce', ''));
 		$buffer = (string) preg_replace('/<body(\s[^>]*)?>/i', "$0\n{$bodyScript}", $buffer, 1);
 
 		$consentBannerConfig = $this->getConsentBannerConfig();

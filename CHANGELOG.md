@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.41.02] - 2026-10-06
+
+### Added
+- `tag_gateway_injects` param ("Loader injected by the gateway?", default on): in gateway mode the plugin adds no GTM loader of its own, because Cloudflare's Google tag gateway injects one at the top of `<head>` on every page; with both, the container was downloaded twice. Defaults to on in code too, so sites already in gateway mode switch over on update without re-saving. Turn it off for gateways that do not inject a loader; the plugin then loads `gtm.js` from the measurement path as in 26.41.01
+
+### Changed
+- The Consent Mode default script is now the first script in `<head>` (right after the opening tag, with the CSP nonce when set) instead of a Web Asset Manager inline script further down, so it runs before any Google tag loader, including one a CDN injects, and before blocking scripts in the head
+- New `Html\HeadScript` helper places that script, with PHPUnit coverage
+- README describes the gateway's injected loader and how to verify a single container load
+
 ## [26.41.01] - 2026-10-06
 
 ### Added
