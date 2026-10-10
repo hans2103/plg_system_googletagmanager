@@ -92,4 +92,34 @@ class ConsentBannerConfigTest extends TestCase
 
 		$this->assertSame(24 * 60 * 60 * 1000, $config->getExpirationMilliseconds());
 	}
+
+	/**
+	 * @since 26.41.04
+	 */
+	public function testOffersMarketingWhenTheNativeBannerIsOff(): void
+	{
+		$config = new ConsentBannerConfig(new Registry(['consent_category_marketing' => '0']));
+
+		$this->assertTrue($config->isMarketingOffered());
+	}
+
+	/**
+	 * @since 26.41.04
+	 */
+	public function testOffersMarketingWhenTheBannerShowsTheCategory(): void
+	{
+		$config = new ConsentBannerConfig(new Registry(['native_consent_banner' => '1']));
+
+		$this->assertTrue($config->isMarketingOffered());
+	}
+
+	/**
+	 * @since 26.41.04
+	 */
+	public function testDoesNotOfferMarketingWhenTheBannerHidesTheCategory(): void
+	{
+		$config = new ConsentBannerConfig(new Registry(['native_consent_banner' => '1', 'consent_category_marketing' => '0']));
+
+		$this->assertFalse($config->isMarketingOffered());
+	}
 }

@@ -57,6 +57,21 @@ final class ConsentBannerConfig
 	}
 
 	/**
+	 * Whether visitors can grant ad consent on this site.
+	 *
+	 * False only when the native banner is used without its Marketing category;
+	 * with the banner off, consent comes from elsewhere (e.g. a GTM banner).
+	 *
+	 * @return boolean
+	 *
+	 * @since 26.41.04
+	 */
+	public function isMarketingOffered(): bool
+	{
+		return !$this->isEnabled() || $this->showMarketingCategory();
+	}
+
+	/**
 	 * How long a visitor's consent choice stays valid, in milliseconds.
 	 *
 	 * @return integer

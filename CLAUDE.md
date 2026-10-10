@@ -26,28 +26,25 @@ This is a Joomla 6.x system plugin that integrates Google Tag Manager (GTM) with
 **src/Extension/GoogleTagManager.php**
 - Main plugin class implementing `SubscriberInterface`
 - Subscribes to two events:
-  - `onBeforeCompileHead`: Injects consent mode initialization and GTM script into `<head>`
-  - `onAfterRender`: Injects noscript fallback iframe immediately after `<body>` tag
+  - `onBeforeCompileHead`: Registers the consent banner assets and adds the GTM loader to `<head>`
+  - `onAfterRender`: Puts the Consent Mode defaults (`ConsentBanner\ConsentScript::build()`) first in `<head>` and renders the native consent banner before `</body>`
+- There is deliberately no noscript `<iframe>`: it would load `ns.html` from Google for visitors without JavaScript, who can't give consent
 - Frontend-only execution (checks `$this->getApplication()->isClient('site')`)
 - HTML document type validation before script injection
 
 ### GTM Integration Flow
 
-1. **Consent Mode Initialization** (onBeforeCompileHead):
+1. **Consent Mode Initialization** (onAfterRender, first script in `<head>`):
    - Creates global `dataLayer` array
    - Defines `gtag()` helper function
    - Reads consent preferences from localStorage (`consentMode`)
-   - Sets default consent states (ad storage denied, analytics granted)
+   - Sets default consent states (everything denied except functionality and security storage)
+   - Keeps ad consent denied when the native banner runs without its Marketing category
    - Pushes `gtm_consent_update` event
 
 2. **GTM Script Loading** (onBeforeCompileHead):
    - Injects standard GTM loader script
    - Uses container ID from plugin configuration
-
-3. **Noscript Fallback** (onAfterRender):
-   - Uses regex to find `<body>` tag in rendered HTML
-   - Injects iframe fallback immediately after opening tag
-   - Provides tracking for users without JavaScript
 
 ## Version Numbering
 

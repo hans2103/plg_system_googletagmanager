@@ -11,7 +11,8 @@
 	 *   [data-consent-expiration-ms="<milliseconds>"]    — expiration duration (defaults to 365 days)
 	 *   [data-consent-action="<action>"]                 — button actions: accept-all, reject-all, save, open-preferences
 	 *   [data-consent-category="analytics"]              — checkbox control for analytics consent
-	 *   [data-consent-category="marketing"]              — checkbox control for marketing consent
+	 *   [data-consent-category="marketing"]              — checkbox control for marketing consent; leave it
+	 *                                                      out and no action grants ad consent
 	 *   [data-consent-icon]                              — icon button to reopen the dialog
 	 *
 	 * CSS class toggling (script toggles this on the root [data-consent-banner] element):
@@ -29,6 +30,10 @@
 	 * {event: 'gtm_consent_update'} to the dataLayer. Reopening via [data-consent-icon]
 	 * ticks the category checkboxes to match the stored choice.
 	 *
+	 * A refused category also removes Google's cookies for it (_ga* / _gid for
+	 * analytics, _gcl_* for marketing) on this host and every parent domain, so a
+	 * _ga that GA4 placed on the parent domain from another subdomain goes too.
+	 *
 	 * Element requirements:
 	 *   [data-consent-category="..."] must be real checkbox-like controls with a .checked property
 	 *     (native <input type="checkbox">, or a custom element exposing .checked).
@@ -36,6 +41,52 @@
 	 */
 
 	var STORAGE_KEY = 'consentMode';
+
+	// Cookie (and localStorage) names Google writes per consent category.
+	var ANALYTICS_NAMES = /^(_ga|_ga_.+|_gid|_gat.*)$/;
+	var MARKETING_NAMES = /^_gcl_/;
+
+	/**
+	 * The host itself plus every parent domain, e.g. for sub.example.com:
+	 * '' (host-only), '.sub.example.com' and '.example.com'. The browser
+	 * ignores a domain it may not set, so the list needs no public-suffix check.
+	 */
+	function cookieDomains() {
+		var parts = window.location.hostname.split('.');
+		var domains = [''];
+
+		for (var i = 0; i < parts.length - 1; i++) {
+			domains.push('.' + parts.slice(i).join('.'));
+		}
+
+		return domains;
+	}
+
+	function removeTrackingData(pattern) {
+		var domains = cookieDomains();
+
+		document.cookie.split(';').forEach(function (cookie) {
+			var name = cookie.split('=')[0].trim();
+
+			if (!pattern.test(name)) {
+				return;
+			}
+
+			domains.forEach(function (domain) {
+				document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/' + (domain ? '; domain=' + domain : '');
+			});
+		});
+
+		try {
+			Object.keys(window.localStorage).forEach(function (key) {
+				if (pattern.test(key)) {
+					window.localStorage.removeItem(key);
+				}
+			});
+		} catch (e) {
+			// localStorage unavailable - nothing stored there to remove.
+		}
+	}
 
 	function readStoredConsent() {
 		var raw = null;
@@ -82,6 +133,15 @@
 			window.gtag('consent', 'update', consentMode);
 		}
 
+		// After the update above, gtag no longer writes these, so they stay gone.
+		if (consentMode.analytics_storage === 'denied') {
+			removeTrackingData(ANALYTICS_NAMES);
+		}
+
+		if (consentMode.ad_storage === 'denied') {
+			removeTrackingData(MARKETING_NAMES);
+		}
+
 		// Same event the head script pushes on page load: GTM tags that wait for
 		// consent use it as their trigger, so they fire on this page view too
 		// instead of only on the next one.
@@ -94,7 +154,10 @@
 		var marketingInput = root.querySelector('[data-consent-category="marketing"]');
 
 		var analyticsGranted = typeof forcedGrant === 'boolean' ? forcedGrant : !!(analyticsInput && analyticsInput.checked);
-		var marketingGranted = typeof forcedGrant === 'boolean' ? forcedGrant : !!(marketingInput && marketingInput.checked);
+		// Visitors can only consent to a category the banner shows: without the
+		// Marketing switch (turned off per site) even accept-all keeps ad
+		// consent denied.
+		var marketingGranted = !!marketingInput && (typeof forcedGrant === 'boolean' ? forcedGrant : marketingInput.checked);
 
 		return {
 			analytics_storage: analyticsGranted ? 'granted' : 'denied',
@@ -116,6 +179,12 @@
 
 		var expirationMilliseconds = parseInt(root.getAttribute('data-consent-expiration-ms'), 10) || (365 * 24 * 60 * 60 * 1000);
 		var hasConsent = readStoredConsent() !== null;
+
+		// No Marketing category on this site: the head script keeps ad consent
+		// denied, so clear the _gcl_* data an earlier choice may have left behind.
+		if (!root.querySelector('[data-consent-category="marketing"]')) {
+			removeTrackingData(MARKETING_NAMES);
+		}
 
 		function setOpen(open) {
 			if (open) {
