@@ -16,6 +16,7 @@ namespace HKweb\Plugin\System\GoogleTagManager\Extension;
 defined('_JEXEC') or die;
 
 use HKweb\Plugin\System\GoogleTagManager\ConsentBanner\ConsentBannerConfig;
+use HKweb\Plugin\System\GoogleTagManager\ConsentBanner\ConsentScript;
 use HKweb\Plugin\System\GoogleTagManager\Html\HeadScript;
 use HKweb\Plugin\System\GoogleTagManager\TagGateway\GatewayPath;
 use Joomla\CMS\Document\HtmlDocument;
@@ -721,62 +722,6 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 	}
 
 	/**
-	 * Get the Consent Mode default script
-	 *
-	 * Initialises the data layer and replays the visitor's stored consent choice
-	 * (or the denied defaults). Placed at the very top of <head> by onAfterRender()
-	 * so it runs before any Google tag loader.
-	 *
-	 * @return  string  The inline JavaScript
-	 *
-	 * @since   26.41.02
-	 */
-	private function getConsentScript(): string
-	{
-		return <<<JS
-window.dataLayer = window.dataLayer || [];
-
-function gtag() {
-	dataLayer.push(arguments);
-}
-
-var defaultConsent = {
-	'ad_storage': 'denied',
-	'ad_user_data': 'denied',
-	'ad_personalization': 'denied',
-	'analytics_storage': 'denied',
-	'personalization_storage': 'denied',
-	'functionality_storage': 'granted',
-	'security_storage': 'granted',
-	'wait_for_update': 500,
-};
-
-var raw = localStorage.getItem('consentMode');
-var consent = defaultConsent;
-
-if (raw !== null) {
-	try {
-		// The cookie-wall banner persists { consentMode: {...}, expiration: ... },
-		// so unwrap consentMode before replaying the stored choice. When the stored
-		// choice has expired, fall back to the denied defaults so the banner can
-		// re-prompt instead of replaying stale consent.
-		var stored = JSON.parse(raw);
-
-		if (!(stored.expiration && Date.now() > stored.expiration)) {
-			consent = stored.consentMode || stored;
-		}
-	} catch (e) {
-		// Malformed value — keep the denied defaults
-	}
-}
-
-gtag('consent', 'default', consent);
-
-dataLayer.push({'event': 'gtm_consent_update'});
-JS;
-	}
-
-	/**
 	 * Add a GTM script to <head>
 	 *
 	 * Registers the consent banner assets and adds the GTM loader script to the
@@ -934,10 +879,11 @@ JS;
 	}
 
 	/**
-	 * Add the Consent Mode defaults at the top of head and GTM noscript after start body
+	 * Add the Consent Mode defaults at the top of head
 	 *
-	 * Injects the Consent Mode default script right after the opening head tag and
-	 * the GTM noscript fallback iframe immediately after the opening body tag.
+	 * Injects the Consent Mode default script right after the opening head tag.
+	 * There is deliberately no GTM noscript iframe: it would load ns.html from
+	 * Google for visitors without JavaScript, who can't give consent.
 	 *
 	 * @return  void
 	 *
@@ -968,23 +914,10 @@ JS;
 			return;
 		}
 
-		// Build noscript iframe src with all query parameters, then HTML-escape the full URL.
-		// The noscript uses the sGTM domain only — server_side_path is for the head script loader, not ns.html.
-		$noscriptBase = $this->getServerSideDomain() ?? self::GTM_DEFAULT_BASE_URL;
-		$queryParams  = array_merge(['id' => $gtmId], $this->getGtmEnvironmentParams());
-		$noscriptSrc  = $noscriptBase . '/ns.html?' . http_build_query($queryParams);
-		$htmlSrc     = htmlspecialchars($noscriptSrc, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-
-		// Google Tag Manager noscript fallback
-		$bodyScript = <<<HTML
-<noscript><iframe src="{$htmlSrc}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-
-HTML;
-
 		$buffer = $application->getBody();
 
 		// Consent Mode defaults go first in <head>, ahead of any loader (ours, or one the gateway injects)
-		$headScript = $this->getConsentScript();
+		$headScript = ConsentScript::build($this->getConsentBannerConfig()->isMarketingOffered());
 
 		// The gateway's injected loader only loads the container: it does not push the gtm.js
 		// event that the standard snippet does, so Page View (All Pages) triggers would never fire.
@@ -994,7 +927,6 @@ HTML;
 		}
 
 		$buffer = HeadScript::prepend($buffer, $headScript, (string) $application->get('csp_nonce', ''));
-		$buffer = (string) preg_replace('/<body(\s[^>]*)?>/i', "$0\n{$bodyScript}", $buffer, 1);
 
 		$consentBannerConfig = $this->getConsentBannerConfig();
 

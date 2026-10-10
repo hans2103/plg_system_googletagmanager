@@ -7,7 +7,6 @@ A Joomla 6.x system plugin for Google Tag Manager (GTM) integration with GDPR-co
 - Google Tag Manager integration (standard and server-side)
 - GDPR consent mode support (grants/denials wired to `localStorage`)
 - Automatic GTM script injection in HTML `<head>`
-- Noscript `<iframe>` fallback for users without JavaScript
 - Configurable GTM Container ID
 - Frontend-only execution
 - GTM Environments support (test before publishing live)
@@ -69,7 +68,7 @@ With the gateway active on your domain, the container must be loaded once, throu
 | **Loader injected by the gateway?** | **Yes** (default, Cloudflare): the plugin adds no GTM loader and leaves loading to the gateway. **No**: the plugin loads `gtm.js` itself from the measurement path, for gateways that do not inject a loader. |
 | **Measurement path** | Only for **No** above: the path configured for the gateway, e.g. `/89w8`. Letters, digits, dashes and underscores only; leading/trailing slashes are optional. Empty or invalid (e.g. a full URL): GTM loads from `googletagmanager.com`. |
 
-In every mode the plugin keeps adding the Consent Mode defaults, as the first script in `<head>` (right after the opening tag, with the CSP nonce when Joomla's HTTP Headers plugin sets one), so they run before any loader. The noscript fallback keeps using `googletagmanager.com`, since the gateway does not serve `ns.html`.
+In every mode the plugin keeps adding the Consent Mode defaults, as the first script in `<head>` (right after the opening tag, with the CSP nonce when Joomla's HTTP Headers plugin sets one), so they run before any loader.
 
 When the plugin loads `gtm.js` itself, it uses a root-relative URL (`/89w8/gtm.js?id=GTM-XXXXXXX`), so it follows whichever host serves the page; the gateway works zone-wide, including subdomains.
 
@@ -93,7 +92,7 @@ Enable **Use server-side tagging?** to route GTM through your own sGTM container
 
 | Field | Description |
 |---|---|
-| **Script Loader URL** | Override the domain used to load `gtm.js` in the `<head>`. Use this when your sGTM provider proxies the loader through a different domain (e.g. Stape Custom Loader with **Use original GTM code** enabled, e.g. `https://example.com/mos`). The noscript fallback always uses the sGTM domain above. |
+| **Script Loader URL** | Override the domain used to load `gtm.js` in the `<head>`. Use this when your sGTM provider proxies the loader through a different domain (e.g. Stape Custom Loader with **Use original GTM code** enabled, e.g. `https://example.com/mos`). |
 | **Server-side GTM Path** | Sub-path prefix if your sGTM scripts are not served from the domain root (e.g. `/gtm`). Leave empty in most setups. |
 
 ---
@@ -169,8 +168,10 @@ By default the plugin assumes a consent banner is provided elsewhere (e.g. a Cus
 | Field | Description |
 |---|---|
 | **Render the consent banner natively?** | Off by default (zero behaviour change). When enabled, the plugin's own banner handles consent end-to-end. |
-| **Show Marketing category?** | On by default. Disable if the site runs no advertising/marketing tags, to avoid showing an irrelevant category to visitors. |
+| **Show Marketing category?** | On by default. Disable if the site runs no advertising/marketing tags, or must not (e.g. a site for children). Without the category no choice grants ad consent: *Accept all* keeps `ad_storage`, `ad_user_data` and `ad_personalization` denied, a stored choice made while the category was shown no longer grants them, and leftover `_gcl_*` data is removed. |
 | **Consent validity (days)** | Default `365`. Number of days a visitor's choice remains valid before they're asked again. No fixed duration is legally mandated. |
+
+When a visitor refuses a category, the banner also removes the cookies Google already set for it (`_ga*` / `_gid` for analytics, `_gcl_*` for marketing), on the current host and every parent domain.
 
 **Avoid showing two banners at once** — if you enable this, disable or remove any existing consent banner tag inside your GTM container first.
 

@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.41.04] - 2026-10-10
+
+### Changed
+- No more noscript `<iframe>` after `<body>`: it loaded `ns.html` from Google for visitors without JavaScript, who can't give consent. Field descriptions no longer mention the noscript fallback
+- When the native banner runs without its Marketing category, no choice grants ad consent: *Accept all* keeps `ad_storage`, `ad_user_data` and `ad_personalization` denied, and the Consent Mode script overrides a stored choice made while the category was still shown. Use this for sites that must not run ad tracking, e.g. a site for children
+- The Consent Mode default script moved to `ConsentBanner\ConsentScript::build()`; new `ConsentBannerConfig::isMarketingOffered()`
+
+### Added
+- A refused category now also removes the cookies Google already set for it (`_ga*` / `_gid` for analytics, `_gcl_*` and `_gcl_ls` for marketing) on the current host and every parent domain, so a `_ga` set on the parent domain from another subdomain goes too
+- Without the Marketing category the banner clears leftover `_gcl_*` data on page load
+- PHPUnit coverage for `isMarketingOffered()` and for `ConsentScript` (runs the generated script in node; skipped when node is missing)
+
 ## [26.41.03] - 2026-10-06
 
 ### Fixed
