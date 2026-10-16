@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [Unreleased]
+
+### Fixed
+- The Consent Mode script now also reads `localStorage` inside its `try`. A browser that blocks storage throws on `localStorage.getItem()`; before, that stopped the script before `gtag('consent', 'default', …)`, so GTM loaded without Consent Mode defaults. Now the denied defaults apply
+- PHPUnit coverage for blocked storage
+
 ## [26.41.04] - 2026-10-10
 
 ### Changed
