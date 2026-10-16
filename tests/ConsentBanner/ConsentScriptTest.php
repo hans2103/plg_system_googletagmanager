@@ -81,6 +81,20 @@ class ConsentScriptTest extends TestCase
 	}
 
 	/**
+	 * A browser that blocks storage throws on localStorage.getItem(); the
+	 * denied defaults must still be set.
+	 *
+	 * @since 26.42.00
+	 */
+	public function testUsesTheDeniedDefaultsWhenStorageIsBlocked(): void
+	{
+		$consent = $this->defaultConsent(ConsentScript::build(true), null, true);
+
+		$this->assertSame(self::AD_DENIED, array_intersect_key($consent, self::AD_DENIED));
+		$this->assertSame('denied', $consent['analytics_storage']);
+	}
+
+	/**
 	 * A consent choice as the banner stores it, accepting everything.
 	 *
 	 * @return  array<string, mixed>
@@ -105,17 +119,21 @@ class ConsentScriptTest extends TestCase
 	 *
 	 * @param   string                     $script  The generated script.
 	 * @param   array<string, mixed>|null  $stored  The stored consent choice, if any.
+	 * @param   bool                       $storageBlocked  Whether localStorage.getItem() throws.
 	 *
 	 * @return  array<string, mixed>
 	 *
 	 * @since 26.41.04
 	 */
-	private function defaultConsent(string $script, ?array $stored): array
+	private function defaultConsent(string $script, ?array $stored, bool $storageBlocked = false): array
 	{
 		$storage = json_encode($stored === null ? null : json_encode($stored));
+		$getItem = $storageBlocked
+			? "throw new Error('SecurityError');"
+			: "return {$storage};";
 		$harness = <<<JS
 globalThis.window = globalThis;
-globalThis.localStorage = { getItem: function () { return {$storage}; } };
+globalThis.localStorage = { getItem: function () { {$getItem} } };
 {$script}
 var call = window.dataLayer.find(function (args) { return args[0] === 'consent' && args[1] === 'default'; });
 process.stdout.write(JSON.stringify(call[2]));

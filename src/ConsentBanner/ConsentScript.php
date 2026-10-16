@@ -67,11 +67,14 @@ var defaultConsent = {
 	'wait_for_update': 500,
 };
 
-var raw = localStorage.getItem('consentMode');
 var consent = defaultConsent;
 
-if (raw !== null) {
-	try {
+try {
+	// Inside the try: reading localStorage itself throws when the browser
+	// blocks storage, and the defaults below must still be set then.
+	var raw = localStorage.getItem('consentMode');
+
+	if (raw !== null) {
 		// The cookie-wall banner persists { consentMode: {...}, expiration: ... },
 		// so unwrap consentMode before replaying the stored choice. When the stored
 		// choice has expired, fall back to the denied defaults so the banner can
@@ -81,9 +84,9 @@ if (raw !== null) {
 		if (!(stored.expiration && Date.now() > stored.expiration)) {
 			consent = stored.consentMode || stored;
 		}
-	} catch (e) {
-		// Malformed value — keep the denied defaults
 	}
+} catch (e) {
+	// Storage blocked or malformed value — keep the denied defaults
 }{$denyAds}
 
 gtag('consent', 'default', consent);
