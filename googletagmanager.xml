@@ -17,6 +17,7 @@
     <files>
         <folder plugin="googletagmanager">services</folder>
         <folder>src</folder>
+        <folder>layouts</folder>
     </files>
 
     <languages folder="language">
