@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.44.00] - 2026-10-28
+
+### Fixed
+- The manifest now declares `layouts/`. The release ZIP already contained it, but Joomla only installs declared folders, so on a site without a template override the native consent banner rendered empty
+- PHPUnit check that every plugin folder is declared in the manifest
+
 ## [26.42.00] - 2026-10-16
 
 ### Fixed
