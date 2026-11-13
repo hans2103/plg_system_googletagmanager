@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [26.46.00] - 2026-11-13
+
+### Added
+- Option **Load banner stylesheet?** (`consent_banner_stylesheet`, default on): a template that styles the native banner completely can switch off `consent-banner.css`, a render-blocking request on every page. New `ConsentBannerConfig::loadsStylesheet()`; the script always loads
+- The full GPL-3.0 licence text
+
 ## [26.44.00] - 2026-10-28
 
 ### Fixed
