@@ -169,6 +169,7 @@ By default the plugin assumes a consent banner is provided elsewhere (e.g. a Cus
 |---|---|
 | **Render the consent banner natively?** | Off by default (zero behaviour change). When enabled, the plugin's own banner handles consent end-to-end. |
 | **Show Marketing category?** | On by default. Disable if the site runs no advertising/marketing tags, or must not (e.g. a site for children). Without the category no choice grants ad consent: *Accept all* keeps `ad_storage`, `ad_user_data` and `ad_personalization` denied, a stored choice made while the category was shown no longer grants them, and leftover `_gcl_*` data is removed. |
+| **Load banner stylesheet?** | On by default. Turn it off when your site template styles the banner completely: `media/css/consent-banner.css` is a render-blocking request on every page. The template then also has to hide `.plg-consent-banner__preferences` until the dialog has `.is-preferences-open` (and hide `.plg-consent-banner__prompt` then), and position the `.plg-consent-banner__icon` reopen button. |
 | **Consent validity (days)** | Default `365`. Number of days a visitor's choice remains valid before they're asked again. No fixed duration is legally mandated. |
 
 When a visitor refuses a category, the banner also removes the cookies Google already set for it (`_ga*` / `_gid` for analytics, `_gcl_*` for marketing), on the current host and every parent domain.

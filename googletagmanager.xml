@@ -7,7 +7,7 @@
     <license>GPLv3 http://www.gnu.org/licenses/gpl.html</license>
     <authorEmail>info@hkweb.nl</authorEmail>
     <authorUrl>https://hkweb.nl</authorUrl>
-    <version>26.44.00</version>
+    <version>26.46.00</version>
     <description>PLG_SYSTEM_GOOGLETAGMANAGER_XML_DESCRIPTION</description>
 
     <php_minimum>8.3.0</php_minimum>
@@ -220,6 +220,18 @@
                     default="1"
                     layout="joomla.form.field.radio.switcher"
                     description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_CONSENT_CATEGORY_MARKETING_DESC"
+                    showon="native_consent_banner:1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field
+                    name="consent_banner_stylesheet"
+                    type="radio"
+                    label="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_CONSENT_BANNER_STYLESHEET_LABEL"
+                    default="1"
+                    layout="joomla.form.field.radio.switcher"
+                    description="PLG_SYSTEM_GOOGLETAGMANAGER_FIELD_CONSENT_BANNER_STYLESHEET_DESC"
                     showon="native_consent_banner:1"
                 >
                     <option value="0">JNO</option>
