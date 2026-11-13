@@ -122,4 +122,24 @@ class ConsentBannerConfigTest extends TestCase
 
 		$this->assertFalse($config->isMarketingOffered());
 	}
+
+	/**
+	 * @since 26.46.00
+	 */
+	public function testLoadsBannerStylesheetByDefault(): void
+	{
+		$config = new ConsentBannerConfig(new Registry());
+
+		$this->assertTrue($config->loadsStylesheet());
+	}
+
+	/**
+	 * @since 26.46.00
+	 */
+	public function testSkipsBannerStylesheetWhenParamIsSetToZero(): void
+	{
+		$config = new ConsentBannerConfig(new Registry(['consent_banner_stylesheet' => '0']));
+
+		$this->assertFalse($config->loadsStylesheet());
+	}
 }

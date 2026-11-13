@@ -57,6 +57,21 @@ final class ConsentBannerConfig
 	}
 
 	/**
+	 * Whether the plugin loads its own banner stylesheet.
+	 *
+	 * Off when the template styles the banner completely: the stylesheet is a
+	 * render-blocking request on every page.
+	 *
+	 * @return boolean
+	 *
+	 * @since 26.46.00
+	 */
+	public function loadsStylesheet(): bool
+	{
+		return (bool) $this->params->get('consent_banner_stylesheet', 1);
+	}
+
+	/**
 	 * Whether visitors can grant ad consent on this site.
 	 *
 	 * False only when the native banner is used without its Marketing category;

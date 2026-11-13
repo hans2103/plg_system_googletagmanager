@@ -756,11 +756,18 @@ final class GoogleTagManager extends CMSPlugin implements SubscriberInterface
 			return;
 		}
 
-		if ($this->getConsentBannerConfig()->isEnabled())
+		$consentBannerConfig = $this->getConsentBannerConfig();
+
+		if ($consentBannerConfig->isEnabled())
 		{
-			$document->getWebAssetManager()
-				->registerAndUseScript('plg_system_googletagmanager.consent-banner', 'plg_system_googletagmanager/consent-banner.js', [], ['defer' => true])
-				->registerAndUseStyle('plg_system_googletagmanager.consent-banner', 'plg_system_googletagmanager/consent-banner.css');
+			$wa = $document->getWebAssetManager()
+				->registerAndUseScript('plg_system_googletagmanager.consent-banner', 'plg_system_googletagmanager/consent-banner.js', [], ['defer' => true]);
+
+			// A template that styles the banner itself can do without this render-blocking request.
+			if ($consentBannerConfig->loadsStylesheet())
+			{
+				$wa->registerAndUseStyle('plg_system_googletagmanager.consent-banner', 'plg_system_googletagmanager/consent-banner.css');
+			}
 		}
 
 		// The Google tag gateway injects its own loader; adding ours would load the container twice.
