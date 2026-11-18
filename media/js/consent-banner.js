@@ -24,7 +24,14 @@
 	 *
 	 * Backdrop clicks never close the dialog (see the `event.target === root` guard
 	 * in the click handler below) — the dialog can only be dismissed via an explicit
-	 * accept-all/reject-all/save action, by design.
+	 * accept-all/reject-all/save action, by design. Escape doesn't close it either
+	 * while no choice is stored: it would close the dialog with nothing saved, and
+	 * it would come back on the next page. Once a choice is stored (the dialog was
+	 * reopened via [data-consent-icon]), Escape closes it and keeps that choice.
+	 *
+	 * Focus: open-preferences hides the button that has focus, so focus moves to
+	 * the first enabled [data-consent-category] (else the save button). Reopening
+	 * via [data-consent-icon] starts there too.
 	 *
 	 * After every choice the script calls gtag('consent', 'update', …) and pushes
 	 * {event: 'gtm_consent_update'} to the dataLayer. Reopening via [data-consent-icon]
@@ -186,6 +193,16 @@
 			removeTrackingData(MARKETING_NAMES);
 		}
 
+		// The button that had focus is hidden once the preferences show (WCAG 2.4.3).
+		function focusPreferences() {
+			var target = root.querySelector('[data-consent-category]:not(:disabled)')
+				|| root.querySelector('[data-consent-action="save"]');
+
+			if (target) {
+				target.focus();
+			}
+		}
+
 		function setOpen(open) {
 			if (open) {
 				root.showModal();
@@ -222,8 +239,26 @@
 				setOpen(false);
 			} else if (action === 'open-preferences') {
 				root.classList.add('is-preferences-open');
+				focusPreferences();
 			}
 		});
+
+		// Escape without a stored choice: keep the dialog open until the visitor
+		// chooses. The keydown guard stops the close request in browsers that
+		// stop firing a cancelable `cancel` after repeated Escapes (Chrome's
+		// close watchers); the `cancel` guard covers the rest.
+		function keepOpenWithoutChoice(event) {
+			if (readStoredConsent() === null) {
+				event.preventDefault();
+			}
+		}
+
+		root.addEventListener('keydown', function (event) {
+			if (event.key === 'Escape') {
+				keepOpenWithoutChoice(event);
+			}
+		});
+		root.addEventListener('cancel', keepOpenWithoutChoice);
 
 		// Tick the category checkboxes to match the stored choice, so reopening
 		// the preferences shows what the visitor picked last time.
@@ -250,6 +285,7 @@
 				syncCheckboxes();
 				root.classList.add('is-preferences-open');
 				setOpen(true);
+				focusPreferences();
 			});
 		}
 
