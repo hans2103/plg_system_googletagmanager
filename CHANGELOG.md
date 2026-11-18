@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
-## [Unreleased]
+## [26.47.00] - 2026-11-18
 
 ### Fixed
 - Native banner: Escape no longer closes the dialog while no choice is stored. Before, it closed with nothing saved and came back on the next page. Once a choice is stored (reopened via the icon), Escape still closes it and keeps that choice
