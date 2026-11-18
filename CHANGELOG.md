@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to the versioning scheme `YY.WW.NN` (Year.Week.Increment).
 
+## [Unreleased]
+
+### Fixed
+- Native banner: Escape no longer closes the dialog while no choice is stored. Before, it closed with nothing saved and came back on the next page. Once a choice is stored (reopened via the icon), Escape still closes it and keeps that choice
+- Native banner: *Customize* moves focus to the first category checkbox; before, focus stayed on the button that the preferences view hides (WCAG 2.4.3). Reopening via the icon starts there too
+
 ## [26.46.00] - 2026-11-13
 
 ### Added
